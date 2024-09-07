@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Pesanan</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+          url("{{ url_for('static', filename='img/123.jpeg') }}") no-repeat
+            center center fixed;
+        background-size: cover;
+        color: #333;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 25px;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+      }
+
+      .left-section,
+      .right-section {
+        flex: 1;
+        margin: 0 10px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #34495e;
+        margin-bottom: 30px;
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      .header-section {
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 16px;
+        color: #34495e;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #3498db;
+      }
+
+      .order-summary {
+        margin-bottom: 30px;
+      }
+
+      .order-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eaeaea;
+        transition: background-color 0.3s ease;
+      }
+
+      .order-item:hover {
+        background-color: #f7f7f7;
+      }
+
+      .order-item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-right: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-item-details {
+        flex: 1;
+      }
+
+      .order-item-name {
+        font-size: 18px;
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .order-item-quantity,
+      .order-item-price {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin: 8px 0;
+      }
+
+      .order-total,
+      .order-total-final,
+      .order-total-weight {
+        display: flex;
+        justify-content: space-between;
+        align-items: center; /* Menyelaraskan elemen secara vertikal */
+        margin-top: 10px; /* Kurangi jarak antar elemen dari 20px ke 10px */
+      }
+
+      .order-total .label,
+      .order-total-final .label,
+      .order-total-weight .label {
+        font-size: 16px; /* Sesuaikan ukuran font jika perlu */
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .order-total .value,
+      .order-total-weight .value {
+        font-size: 16px; /* Sesuaikan ukuran font jika perlu */
+        font-weight: bold;
+        color: #000000;
+        text-align: right;
+        margin-left: auto; /* Memastikan nilai terletak di sebelah kanan */
+      }
+      .order-total-final .value {
+        font-size: 16px; /* Sesuaikan ukuran font jika perlu */
+        font-weight: bold;
+        color: #e74c3c;
+        text-align: right;
+        margin-left: auto; /* Memastikan nilai terletak di sebelah kanan */
+      }
+
+      .btn {
+        display: inline-block;
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #3498db;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .btn:hover {
+        background-color: #2980b9;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      hr {
+        border: 0;
+        border-top: 1px solid #eaeaea;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="order-form" action="{{ url_for('submit_order') }}" method="POST">
+      <div class="container">
+        <div class="left-section">
+          <div class="header-section">
+            <h1>Alamat Pengiriman</h1>
+            <div class="form-group">
+              <label>Nama:</label>
+              <input
+                type="text"
+                name="nama"
+                value="{{ user_info['nama'] }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>No Telp:</label>
+              <input
+                type="text"
+                name="nohp"
+                value="{{ user_info['nohp'] }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Tanggal Pemesanan:</label>
+              <input
+                type="text"
+                name="order_date"
+                value="{{ order_date }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Estimasi Pengiriman:</label>
+              <input
+                type="text"
+                name="estimated_delivery_date"
+                value="{{ estimated_delivery_date }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Lokasi Pengiriman:</label>
+              <select
+                id="shipping-location"
+                name="shipping_location"
+                class="form-control"
+              >
+                <option value="" disabled selected>
+                  Pilih Lokasi Pengiriman
+                </option>
+                <option value="dalam_sulawesi_utara">
+                  Dalam Sulawesi Utara
+                </option>
+                <option value="luar_sulawesi_utara">Luar Sulawesi Utara</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Harga Ongkir:</label>
+              <input
+                type="text"
+                id="shipping-cost"
+                name="shipping_cost"
+                value=""
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Detail Alamat:</label>
+              <input
+                type="text"
+                id="detail-address"
+                name="detail_address"
+                required
+                class="form-control"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="right-section">
+          <h1>Detail Pesanan</h1>
+          <div class="order-summary">
+            <ul>
+              <li class="order-item">
+                <img
+                  src="{{ request.form['product_image'] }}"
+                  alt="Product Image"
+                  class="order-item-image"
+                />
+                <div class="order-item-details">
+                  <p class="order-item-name">
+                    {{ request.form["product_name"] }}
+                  </p>
+                  <p class="order-item-quantity">
+                    Jumlah: {{ request.form["quantity"] }} kg
+                  </p>
+                  <p class="order-item-price">
+                    Total Harga: Rp<span id="product-price">{{
+                      request.form["total_price"]
+                    }}</span>
+                  </p>
+                </div>
+                <input
+                  type="hidden"
+                  name="items[]"
+                  value="{{ request.form | tojson }}"
+                />
+              </li>
+            </ul>
+
+            <div class="order-status">
+              <p class="label">Status Pesanan:</p>
+              <p class="value">{{ order_status }}</p>
+            </div>
+
+            <div class="order-total-weight">
+              <p class="label">Total Berat Produk:</p>
+              <p class="value">{{ request.form["quantity"] }} kg</p>
+              <input
+                type="hidden"
+                name="total_weight"
+                value="{{ request.form['quantity'] }}"
+              />
+            </div>
+
+            <div class="order-total">
+              <p class="label">Total Harga Produk:</p>
+              <p class="value" id="total-price">
+                <span id="total-price-value">{{
+                  request.form["total_price"]
+                }}</span>
+              </p>
+              <input
+                type="hidden"
+                name="total_price"
+                id="total-price-input"
+                value="{{ request.form['total_price'] }}"
+              />
+            </div>
+
+            <div class="order-shipping-cost">
+              <p class="label">Total Harga Ongkir:</p>
+              <p class="value" id="shipping-cost-display">
+                <span id="shipping-cost-value">500.000</span>
+              </p>
+              <input
+                type="hidden"
+                name="shipping_cost"
+                id="shipping-cost-input"
+                value="500000"
+              />
+            </div>
+
+            <div class="order-total-final">
+              <p class="label">Total Harga yang Harus Dibayar:</p>
+              <p class="value" id="final-price">
+                <span id="final-price-value">{{
+                  request.form["total_price"]
+                }}</span>
+              </p>
+              <input
+                type="hidden"
+                name="final_price"
+                id="final-price-input"
+                value="{{ request.form['total_price'] }}"
+              />
+            </div>
+
+            <button class="btn" type="submit" id="bayar-sekarang">
+              Bayar Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script>
+      document
+        .getElementById("shipping-location")
+        .addEventListener("change", function () {
+          var costInput = document.getElementById("shipping-cost");
+          var shippingCostDisplay = document.getElementById(
+            "shipping-cost-display"
+          );
+          var finalPriceElement = document.getElementById("final-price");
+          var baseShippingCost = 500000;
+          var totalWeight = parseFloat(
+            "{{ request.form['quantity'] | default('0') }}"
+          ); // Pastikan ini angka
+
+          // Menghitung kelipatan 2000kg
+          var weightMultiplier = Math.ceil(totalWeight / 2000);
+
+          // Tentukan biaya ongkir berdasarkan lokasi
+          var shippingCost = 0;
+          if (this.value === "dalam_sulawesi_utara") {
+            shippingCost = baseShippingCost * weightMultiplier;
+          } else {
+            shippingCost = 1000000 * weightMultiplier;
+          }
+
+          // Format shipping cost menjadi Rp.xxxx,xx
+          costInput.value = shippingCost;
+          shippingCostDisplay.innerHTML =
+            "Rp" +
+            new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 2,
+            })
+              .format(shippingCost)
+              .replace("Rp", "Rp.");
+
+          var totalHargaProduk = parseFloat(
+            "{{ request.form['total_price'] | default('0') }}"
+              .replace("Rp.", "")
+              .replace(",", "")
+          ); // Pastikan ini angka
+
+          // Hitung dan format final price menjadi Rp.xxxx,xx
+          var finalPrice = totalHargaProduk + shippingCost;
+          finalPriceElement.innerHTML =
+            "Rp" +
+            new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 2,
+            })
+              .format(finalPrice)
+              .replace("Rp", "Rp.");
+
+          document.getElementById("final-price-input").value = finalPrice;
+          document.getElementById("shipping-cost-input").value = shippingCost;
+        });
+
+      document
+        .getElementById("order-form")
+        .addEventListener("submit", function (event) {
+          var shippingLocation =
+            document.getElementById("shipping-location").value;
+          if (!shippingLocation) {
+            alert("Silakan pilih lokasi pengiriman.");
+            event.preventDefault(); // Mencegah pengiriman formulir
+          }
+        });
+    </script>
+  </body>
+</html>

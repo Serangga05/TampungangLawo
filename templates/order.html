@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Pesanan</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+          url("{{ url_for('static', filename='img/123.jpeg') }}") no-repeat
+            center center fixed;
+        background-size: cover;
+        color: #333;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 25px;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+      }
+
+      .left-section,
+      .right-section {
+        flex: 1;
+        margin: 0 10px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #34495e;
+        margin-bottom: 30px;
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      .header-section {
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 16px;
+        color: #34495e;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #3498db;
+      }
+
+      .order-summary {
+        margin-bottom: 30px;
+      }
+
+      .product-details {
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .product-details h2 {
+        font-size: 20px;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .product-details p {
+        font-size: 25px;
+        color: #34495e;
+        margin: 10px 0;
+      }
+
+      .product-image {
+        width: 100%;
+        max-width: 250px;
+        height: auto;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eaeaea;
+        transition: background-color 0.3s ease;
+      }
+
+      .order-item:hover {
+        background-color: #f7f7f7;
+      }
+
+      .order-item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-right: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-item-details {
+        flex: 1;
+      }
+
+      .order-item-name {
+        font-size: 18px;
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .order-item-quantity,
+      .order-item-price {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin: 8px 0;
+      }
+
+      .order-total,
+      .order-total-final,
+      .order-total-weight,
+      .order-shipping-cost {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .order-total .label,
+      .order-total-final .label,
+      .order-total-weight .label,
+      .order-shipping-cost .label {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .order-total .value,
+      .order-total-weight .value,
+      .order-shipping-cost .value {
+        font-size: 16px;
+        font-weight: bold;
+        color: #000000;
+        text-align: right;
+        margin-left: auto;
+      }
+
+      .order-total-final .value {
+        font-size: 16px;
+        font-weight: bold;
+        color: #e74c3c;
+        text-align: right;
+        margin-left: auto;
+      }
+
+      .btn {
+        display: inline-block;
+        width: 100%;
+        padding: 14px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #3498db;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .btn:hover {
+        background-color: #2980b9;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      hr {
+        border: 0;
+        border-top: 1px solid #eaeaea;
+        margin: 20px 0;
+      }
+
+      /* Media Queries */
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          padding: 15px;
+        }
+
+        .left-section,
+        .right-section {
+          margin: 0;
+          width: 100%;
+        }
+
+        .product-image {
+          max-width: 100%;
+        }
+
+        .order-item-image {
+          width: 60px;
+          height: 60px;
+        }
+
+        .order-item-name {
+          font-size: 16px;
+        }
+
+        .order-item-quantity,
+        .order-item-price {
+          font-size: 12px;
+        }
+
+        .order-total .value,
+        .order-total-weight .value,
+        .order-shipping-cost .value,
+        .order-total-final .value {
+          font-size: 14px;
+        }
+
+        .btn {
+          font-size: 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .order-summary {
+          font-size: 14px;
+        }
+
+        .order-item-name {
+          font-size: 14px;
+        }
+
+        .order-item-quantity,
+        .order-item-price {
+          font-size: 10px;
+        }
+
+        .btn {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <form id="order-form" action="{{ url_for('submit_order') }}" method="POST">
+      <div class="container">
+        <div class="left-section">
+          <div class="header-section">
+            <!-- Informasi Pengguna dan Alamat Pengiriman -->
+            <h1>Alamat Pengiriman</h1>
+            <div class="form-group">
+              <label>Nama:</label>
+              <input
+                type="text"
+                name="nama"
+                value="{{ user_info['nama'] }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>No Telp:</label>
+              <input
+                type="text"
+                name="nohp"
+                value="{{ user_info['nohp'] }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Tanggal Pemesanan:</label>
+              <input
+                type="text"
+                name="order_date"
+                value="{{ order_date }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Estimasi Pengiriman:</label>
+              <input
+                type="text"
+                name="estimated_delivery_date"
+                value="{{ estimated_delivery_date }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Lokasi Pengiriman:</label>
+              <select
+                id="shipping-location"
+                name="shipping_location"
+                class="form-control"
+              >
+                <option value="" disabled selected>
+                  Pilih Lokasi Pengiriman
+                </option>
+                <option value="dalam_sulawesi_utara">
+                  Dalam Sulawesi Utara
+                </option>
+                <option value="luar_sulawesi_utara">Luar Sulawesi Utara</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Harga Ongkir:</label>
+              <input
+                type="text"
+                id="shipping-cost"
+                name="shipping_cost"
+                value="Rp {{ '{:,.0f}'.format(shipping_cost).replace(',', '.') }}"
+                readonly
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label>Detail Alamat:</label>
+              <input
+                type="text"
+                id="detail-address"
+                name="detail_address"
+                required
+                class="form-control"
+              />
+            </div>
+            <!-- Hidden Inputs for Product Info -->
+            <input
+              type="hidden"
+              name="product_name"
+              value="{{ product_name }}"
+            />
+            <input
+              type="hidden"
+              name="product_image"
+              value="{{ product_image }}"
+            />
+          </div>
+        </div>
+
+        <div class="right-section">
+          <h1>Detail Pesanan</h1>
+          <div class="order-summary">
+            <!-- Nama Produk dan Gambar Produk -->
+            <div class="product-details">
+              <h2>Nama Produk:</h2>
+              <p>{{ product_name }}</p>
+              <img
+                src="{{ product_image }}"
+                alt="{{ product_name }}"
+                class="product-image"
+              />
+            </div>
+
+            <!-- Tampilkan Status Pesanan -->
+            <div class="order-status">
+              <p class="label">Status Pesanan:</p>
+              <p class="value">{{ order_status }}</p>
+            </div>
+
+            <!-- Keterangan Total Berat Produk -->
+            <div class="order-total-weight">
+              <p class="label">Total Berat Produk:</p>
+              <p class="value">{{ total_weight }} kg</p>
+              <input
+                type="hidden"
+                name="total_weight"
+                value="{{ total_weight }}"
+              />
+            </div>
+
+            <!-- Total Harga Produk -->
+            <div class="order-total">
+              <p class="label">Total Harga Produk:</p>
+              <p class="value">
+                Rp {{ '{:,.0f}'.format(total_price).replace(',', '.') }}
+              </p>
+              <input
+                type="hidden"
+                name="total_price"
+                value="{{ total_price }}"
+              />
+            </div>
+
+            <!-- Total Harga yang Harus Dibayar -->
+            <div class="order-total-final">
+              <p class="label">Total Harga yang Harus Dibayar:</p>
+              <p class="value" id="final-price">
+                Rp {{ '{:,.0f}'.format(total_amount_due).replace(',', '.') }}
+              </p>
+              <input
+                type="hidden"
+                name="final_price"
+                id="final-price-input"
+                value="{{ total_amount_due }}"
+              />
+            </div>
+
+            <button class="btn" type="submit" id="bayar-sekarang">
+              Bayar Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script>
+      document
+        .getElementById("shipping-location")
+        .addEventListener("change", function () {
+          var costInput = document.getElementById("shipping-cost");
+          var finalPriceElement = document.getElementById("final-price");
+          var baseShippingCost = 500000;
+          var totalWeight = parseFloat("{{ total_weight | default(0) }}"); // Pastikan ini angka
+
+          // Menghitung kelipatan 2000kg
+          var weightMultiplier = Math.ceil(totalWeight / 2000);
+
+          // Tentukan biaya ongkir berdasarkan lokasi
+          var shippingCost = 0;
+          if (this.value === "dalam_sulawesi_utara") {
+            shippingCost = baseShippingCost * weightMultiplier;
+          } else {
+            shippingCost = 1000000 * weightMultiplier;
+          }
+
+          // Format shipping cost menjadi Rp.xxxx,xx
+          costInput.value = new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+          })
+            .format(shippingCost)
+            .replace("Rp", "Rp.");
+
+          var totalHargaProduk = parseFloat("{{ total_price | default(0) }}"); // Pastikan ini angka
+
+          // Hitung dan format final price menjadi Rp.xxxx,xx
+          var finalPrice = totalHargaProduk + shippingCost;
+          finalPriceElement.textContent = new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+          })
+            .format(finalPrice)
+            .replace("Rp", "Rp.");
+
+          document.getElementById("final-price-input").value = finalPrice;
+        });
+    </script>
+  </body>
+</html>

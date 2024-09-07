@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .container-fluid {
+        height: 100vh;
+        display: flex;
+        flex-direction: row;
+      }
+      .left-side {
+        flex: 1;
+        background-image: url("../static/img/bglogin.jpg");
+        background-size: cover;
+        background-position: center;
+      }
+      .right-side {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .login-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        position: relative;
+      }
+      .btn-login {
+        background-color: #46a9d3;
+        color: #fff;
+        border: none;
+      }
+      .btn-login:hover {
+        background-color: #3a8bcf;
+      }
+      .register-link {
+        color: #46a9d3;
+      }
+      .register-link:hover {
+        text-decoration: underline;
+      }
+      .form-icon {
+        position: relative;
+      }
+      .form-icon input {
+        padding-right: 2.5rem; /* Space for the eye icon */
+      }
+      .form-icon .bi-eye {
+        position: absolute;
+        top: 50%; /* Menempatkan ikon di tengah vertikal */
+        right: 10px; /* Jarak dari sisi kanan */
+        transform: translateY(10%); /* Menurunkan posisi ikon mata */
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Left Side: Background Image -->
+      <div class="left-side"></div>
+
+      <!-- Right Side: Login Card -->
+      <div class="right-side">
+        <div class="login-card">
+          <h2 class="text-center mb-4">Login</h2>
+          <form id="loginForm" method="POST">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username_give"
+                class="form-control"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+            <div class="mb-3 form-icon">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password_give"
+                class="form-control"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-login w-100 mb-3">
+              Login
+            </button>
+            <p class="text-center">
+              Belum punya akun?
+              <a href="/sign_up" class="register-link">Buat akun</a>
+            </p>
+            <p class="text-center">
+              Anda adalah admin?
+              <a href="/loginadmin" class="register-link">Login disini</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+roLPxQhYCpym79fj5hbwgFOk5d2g"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery Cookie Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#loginForm").submit(function (event) {
+          event.preventDefault(); // Mencegah pengiriman formulir secara default
+          let username = $("#username").val();
+          let password = $("#password").val();
+
+          $.ajax({
+            type: "POST",
+            url: "/login",
+            data: {
+              username_give: username,
+              password_give: password,
+            },
+            success: function (response) {
+              if (response["result"] === "success") {
+                $.cookie("mytoken", response["token"], { path: "/" });
+                window.location.replace("/user");
+              } else {
+                alert(response["msg"]);
+              }
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

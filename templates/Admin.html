@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Tampunganglawo</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
+    />
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <!-- CSS -->
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .navbar {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        padding: 0.5rem 1rem;
+      }
+      .navbar-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .navbar-brand {
+        margin-left: 2rem;
+        margin-right: 2rem;
+      }
+      .navbar-nav {
+        margin: 0 auto;
+      }
+      .nav-item {
+        margin-left: 1rem;
+      }
+      .nav-link {
+        font-size: 1.25rem;
+        padding: 0.75rem 1rem;
+        transition: background-color 0.3s;
+      }
+      .nav-link:hover {
+        background-color: #4dcaff;
+        border-radius: 0.25rem;
+      }
+      .navbar-nav.ms-auto {
+        margin-right: 2rem;
+      }
+      .nav-item .nav-link {
+        font-size: 1.5rem;
+      }
+      .navbar-nav .nav-item .nav-link {
+        margin-left: 1rem;
+      }
+
+      .dropdown-menu {
+        min-width: 200px;
+        font-size: 1.25rem;
+      }
+
+      .dropdown-item {
+        padding: 0.75rem 1.5rem;
+      }
+
+      .bi {
+        font-size: 2rem;
+      }
+
+      .notification-dropdown,
+      .cart-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+
+      .notification-dropdown.show,
+      .cart-dropdown.show {
+        display: block;
+      }
+
+      body {
+        padding-top: 90px;
+        background-color: #ffffff;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Jarak antara tombol */
+        margin-top: 10px;
+      }
+
+      .product-card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+
+      .product-card:hover {
+        transform: scale(1.05);
+      }
+
+      .product-card img {
+        max-height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+
+      .product-card h5 {
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .product-card p {
+        margin-bottom: 5px;
+        text-align: center;
+      }
+
+      .btn-custom {
+        background-color: #46a9d3;
+        color: white;
+        border: none;
+      }
+
+      .btn-custom:hover {
+        background-color: #3a8bb1;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Styling untuk tabel */
+      .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 1em;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .order-table thead tr {
+        background-color: #46a9d3;
+        color: #ffffff;
+        text-align: left;
+        font-weight: bold;
+      }
+
+      .order-table th,
+      .order-table td {
+        padding: 12px 15px;
+        border: 1px solid #dddddd;
+      }
+
+      .order-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+      }
+
+      .order-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+      }
+
+      .order-table tbody tr:last-of-type {
+        border-bottom: 2px solid #46a9d3;
+      }
+
+      .order-table tbody tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      /* Styling untuk tombol aksi */
+      .action-button {
+        padding: 8px 12px;
+        background-color: #46a9d3;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      /* Mengatur warna latar belakang header tabel */
+      .thead-color {
+        background-color: #46a9d3;
+        color: white;
+      }
+
+      /* Mengatur warna latar belakang baris tabel */
+      .tbody-color tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      /* Hover effect untuk baris tabel */
+      .table-hover tbody tr:hover {
+        background-color: #e1f5fe;
+      }
+
+      /* Mengatur border tabel agar lebih halus */
+      .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: transparent;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+        text-align: center;
+      }
+
+      /* Membuat border untuk header tabel */
+      .table thead th {
+        border-bottom: 2px solid #dee2e6;
+      }
+
+      /* Menambahkan border ke setiap kolom */
+      .table td,
+      .table th {
+        border: 1px solid #ddd;
+      }
+
+      .action-button:hover {
+        background-color: #368bbd;
+      }
+
+      .footer {
+        background-color: #4dcaff;
+        color: #ffffff;
+        text-align: center;
+      }
+
+      .footer h5 {
+        margin-bottom: 1rem;
+        font-weight: bold;
+      }
+
+      .footer p {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer .bi {
+        font-size: 1.5rem;
+        margin: 0 0.5rem;
+        transition: transform 0.3s;
+      }
+
+      .footer .bi:hover {
+        transform: scale(1.2);
+      }
+
+      .footer .bi-instagram,
+      .footer .bi-facebook,
+      .footer .bi-email {
+        color: #000000; /* Warna hitam untuk ikon */
+      }
+
+      .footer .bi-instagram:hover,
+      .footer .bi-facebook:hover,
+      .footer .bi-email:hover {
+        color: #ffffff; /* Warna putih untuk ikon saat dihover */
+      }
+
+      .notification-dropdown {
+        max-height: 400px;
+        overflow-y: auto;
+        width: 350px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+      }
+
+      /* Responsive adjustments for notification dropdown */
+      @media (max-width: 767px) {
+        .notification-dropdown {
+          width: 100%;
+        }
+      }
+
+      .notification-dropdown .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #f1f1f1;
+        transition: background-color 0.2s ease;
+        white-space: normal; /* Menjaga teks agar bisa wrap */
+        word-wrap: break-word; /* Pastikan teks panjang dibungkus */
+      }
+
+      .notification-dropdown .dropdown-item:last-child {
+        border-bottom: none;
+      }
+
+      .notification-dropdown .dropdown-item:hover {
+        background-color: #f9f9f9;
+      }
+
+      .notification-dropdown .dropdown-item .icon {
+        margin-right: 10px;
+        color: #007bff;
+        font-size: 18px;
+      }
+
+      .notification-dropdown .dropdown-item .text {
+        flex-grow: 1;
+        font-size: 14px;
+        line-height: 1.4; /* Spasi antarbaris lebih nyaman dibaca */
+      }
+
+      .notification-dropdown .dropdown-item .time {
+        font-size: 12px;
+        color: #888;
+        margin-top: 5px;
+      }
+
+      .notification-dropdown .dropdown-header {
+        padding: 10px;
+        background-color: #f1f1f1;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .notification-dropdown .no-notifications {
+        padding: 20px;
+        text-align: center;
+        color: #888;
+      }
+
+      .notification-dropdown .mark-read {
+        text-align: center;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        border-radius: 0;
+      }
+      /* Ensure modal content is responsive */
+      .modal-dialog {
+        max-width: 100%;
+        margin: 1.75rem auto;
+      }
+
+      .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - (1.75rem * 2));
+      }
+
+      /* Make sure modal content doesn't exceed screen width */
+      .modal-content {
+        border-radius: 0.3rem;
+        max-width: 100%;
+      }
+
+      /* Responsive adjustments for form elements inside modals */
+      @media (max-width: 576px) {
+        .modal-dialog {
+          margin: 0;
+          padding: 1rem;
+        }
+
+        .modal-content {
+          border-radius: 0;
+        }
+
+        .modal-body {
+          padding: 1rem;
+        }
+
+        .form-control {
+          font-size: 0.875rem;
+        }
+
+        .btn-custom {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+        }
+      }
+      /* Make sure table scrolls on smaller screens */
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      /* Center modal vertically and make it responsive */
+      .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - (1.75rem * 2));
+      }
+
+      /* Ensure modal content does not exceed screen width */
+      .modal-content {
+        border-radius: 0.3rem;
+        max-width: 100%;
+      }
+
+      /* Make the image inside modal responsive */
+      #payment-proof-img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Adjust modal padding and font sizes for small screens */
+      @media (max-width: 576px) {
+        .modal-dialog {
+          margin: 0;
+          padding: 1rem;
+        }
+
+        .modal-content {
+          border-radius: 0;
+        }
+
+        .modal-body {
+          padding: 1rem;
+        }
+
+        .form-control,
+        .form-select {
+          font-size: 0.875rem;
+        }
+
+        .btn-primary {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+        }
+      }
+      /* Responsive table */
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      /* Footer styles */
+      .footer {
+        background-color: #4dcaff;
+        color: #ffffff;
+        text-align: center;
+      }
+      .footer h5 {
+        margin-bottom: 1rem;
+        font-weight: bold;
+      }
+      .footer p {
+        margin-bottom: 0.5rem;
+      }
+      .footer .bi {
+        font-size: 1.5rem;
+        margin: 0 0.75rem; /* Mengubah margin menjadi 0.75rem untuk jarak yang lebih rapi */
+        transition: transform 0.3s;
+      }
+      .footer .bi:hover {
+        transform: scale(1.2);
+      }
+      .footer .bi-instagram,
+      .footer .bi-facebook,
+      .footer .bi-email {
+        color: #000000; /* Warna hitam untuk ikon */
+      }
+      .footer .bi-instagram:hover,
+      .footer .bi-facebook:hover,
+      .footer .bi-email:hover {
+        color: #ffffff; /* Warna putih untuk ikon saat dihover */
+      }
+    </style>
+    <script>
+      function logout() {
+        $.removeCookie("mytoken", { path: "/" });
+        alert("Keluar!");
+        window.location.href = "/";
+      }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const notificationIcon = document.getElementById("notificationIcon");
+        const notificationDropdown = document.getElementById(
+          "notificationDropdown"
+        );
+        const badge = notificationIcon.querySelector(".badge");
+
+        // Fungsi untuk mengambil jumlah notifikasi dan menampilkannya di badge
+        function updateNotificationBadge() {
+          fetch("/admin/notifications")
+            .then((response) => response.json())
+            .then((data) => {
+              const unreadNotifications = data.filter((notif) => !notif.read); // Filter notifikasi yang belum dibaca
+              const unreadCount = unreadNotifications.length;
+
+              if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.style.display = "inline-block"; // Tampilkan badge jika ada notifikasi
+              } else {
+                badge.style.display = "none"; // Sembunyikan badge jika tidak ada notifikasi
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching notifications:", error);
+            });
+        }
+
+        // Fungsi untuk menampilkan notifikasi ke dropdown
+        function populateNotifications(notifications) {
+          // Kosongkan dropdown sebelum mengisi
+          notificationDropdown.innerHTML =
+            '<div class="dropdown-header">Notifications</div>';
+
+          if (notifications.length === 0) {
+            notificationDropdown.innerHTML +=
+              '<div class="p-3">No new notifications</div>';
+            badge.style.display = "none"; // Sembunyikan badge jika tidak ada notifikasi
+          } else {
+            notifications.forEach((notif) => {
+              const readClass = notif.read ? "read" : "unread"; // Tambahkan kelas sesuai status read
+              const item = `
+                <div class="dropdown-item ${readClass}">
+                  <i class="${notif.icon} icon"></i>
+                  <div class="text">
+                    ${notif.message}
+                    <div class="time">${notif.time}</div>
+                  </div>
+                </div>
+              `;
+              notificationDropdown.innerHTML += item;
+            });
+
+            // Tambahkan tombol "Mark all as read"
+            notificationDropdown.innerHTML +=
+              '<div class="mark-read">Mark all as read</div>';
+          }
+        }
+
+        // Fungsi untuk mengambil notifikasi dari server
+        function fetchNotifications() {
+          fetch("/admin/notifications")
+            .then((response) => response.json())
+            .then((notifications) => {
+              populateNotifications(notifications);
+            })
+            .catch((error) => {
+              console.error("Error fetching notifications:", error);
+              notificationDropdown.innerHTML =
+                '<div class="p-3">Error loading notifications</div>';
+            });
+        }
+
+        // Saat ikon notifikasi di-klik, ambil notifikasi dari server dan toggle dropdown
+        notificationIcon.addEventListener("click", function () {
+          fetchNotifications();
+          // Toggle dropdown (tampilkan atau sembunyikan)
+          notificationDropdown.classList.toggle("show");
+        });
+
+        // Fungsi untuk menandai semua notifikasi sebagai sudah dibaca
+        notificationDropdown.addEventListener("click", function (event) {
+          if (event.target.classList.contains("mark-read")) {
+            fetch("/admin/mark-notifications-read", { method: "POST" }) // Kirim request ke server untuk menandai semua notifikasi sebagai read
+              .then((response) => response.json())
+              .then(() => {
+                // Perbarui tampilan notifikasi sebagai sudah dibaca (read)
+                const items = notificationDropdown.querySelectorAll(
+                  ".dropdown-item.unread"
+                );
+                items.forEach((item) => {
+                  item.classList.remove("unread");
+                  item.classList.add("read");
+                });
+
+                // Perbarui badge
+                badge.style.display = "none"; // Sembunyikan badge setelah semua notifikasi ditandai sebagai read
+              })
+              .catch((error) => {
+                console.error("Error marking notifications as read:", error);
+              });
+          }
+        });
+
+        // Panggil fungsi untuk memperbarui badge saat halaman dimuat
+        updateNotificationBadge();
+
+        // Opsional: perbarui badge secara berkala tanpa perlu reload halaman
+        setInterval(updateNotificationBadge, 60000); // Cek notifikasi baru setiap 60 detik
+      });
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-white">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="../static/img/logo.png" alt="Logo" class="navbar-logo" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="#produk">Produk</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#pesanan">Pesanan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#pengguna">Pengguna</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#kontak">Pesan</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle"></i>
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li><a class="dropdown-item" onclick="logout()">Keluar</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Bagian Produk -->
+    <div id="produk" class="container mt-5">
+      <div
+        class="d-flex justify-content-between align-items-center mb-4 flex-wrap"
+      >
+        <h1 class="mb-2 mb-md-0">Produk</h1>
+        <button
+          class="btn btn-custom"
+          data-bs-toggle="modal"
+          data-bs-target="#tambahProdukModal"
+        >
+          Tambah Produk
+        </button>
+      </div>
+      <div class="row" id="productList">
+        {% for product in products %}
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 product-card">
+            <img
+              src="{{ url_for('static', filename='img/' + product['image']) }}"
+              alt="{{ product['name'] }}"
+              class="img-fluid mb-2"
+              style="max-height: 200px; object-fit: cover"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ product['name'] }}</h5>
+              <p class="card-text">Harga: Rp{{ product['price'] }}/kg</p>
+              <p class="card-text">Stok: {{ product['stock'] }} kg</p>
+              <p class="card-text">{{ product['description'] }}</p>
+              <!-- Container untuk tombol -->
+              <div class="button-container">
+                <a
+                  href="#"
+                  onclick="openEditProductModal('{{ product['_id'] }}')"
+                  class="btn btn-warning btn-sm"
+                  >Edit</a
+                >
+                <a
+                  href="#"
+                  onclick="openDeleteProductModal('{{ product['_id'] }}')"
+                  class="btn btn-danger btn-sm"
+                  >Hapus</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Modal Tambah Produk -->
+    <div
+      class="modal fade"
+      id="tambahProdukModal"
+      tabindex="-1"
+      aria-labelledby="tambahProdukModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="tambahProdukModalLabel">
+              Tambah Produk Baru
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="tambahProdukForm" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="productImage" class="form-label"
+                  >Gambar Produk</label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  id="productImage"
+                  name="productImage"
+                  accept="image/*"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="productName" class="form-label">Nama Produk</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="productName"
+                  name="productName"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="productPrice" class="form-label">Harga</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="productPrice"
+                  name="productPrice"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="productStock" class="form-label">Stok</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="productStock"
+                  name="productStock"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="productDescription" class="form-label"
+                  >Deskripsi Produk</label
+                >
+                <textarea
+                  class="form-control"
+                  id="productDescription"
+                  name="productDescription"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-custom">
+                Tambah Produk
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Edit Produk -->
+    <div
+      class="modal fade"
+      id="editProductModal"
+      tabindex="-1"
+      aria-labelledby="editProductModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProductModalLabel">Edit Produk</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="editProductForm" enctype="multipart/form-data">
+              <input type="hidden" id="editProductId" name="productId" />
+              <div class="mb-3">
+                <label for="editProductImage" class="form-label"
+                  >Gambar Produk</label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  id="editProductImage"
+                  name="productImage"
+                  accept="image/*"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="editProductName" class="form-label"
+                  >Nama Produk</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editProductName"
+                  name="productName"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="editProductPrice" class="form-label">Harga</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="editProductPrice"
+                  name="productPrice"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="editProductStock" class="form-label">Stok</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="editProductStock"
+                  name="productStock"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="editProductDescription" class="form-label"
+                  >Deskripsi Produk</label
+                >
+                <textarea
+                  class="form-control"
+                  id="editProductDescription"
+                  name="productDescription"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-custom">
+                Simpan Perubahan
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Hapus Produk -->
+    <div
+      class="modal fade"
+      id="hapusProdukModal"
+      tabindex="-1"
+      aria-labelledby="hapusProdukModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="hapusProdukModalLabel">Hapus Produk</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>Apakah Anda yakin ingin menghapus produk ini?</p>
+            <form id="hapusProdukForm">
+              <input type="hidden" id="hapusProductId" name="productId" />
+              <button type="submit" class="btn btn-danger">Hapus</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Batal
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daftar Pesanan -->
+    <div class="container mt-5">
+      <h1 id="pesanan">Daftar Pesanan</h1>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead class="thead-color">
+            <tr>
+              <th>Tanggal Pemesanan</th>
+              <th>Info Pengguna</th>
+              <th>Alamat</th>
+              <th>Jenis Ikan</th>
+              <th>Total</th>
+              <th>Status Pesanan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+            <tr>
+              <td>{{ order.order_date }}</td>
+              <td>
+                {{ order.nama }} <br />
+                {{ order.nohp }}
+              </td>
+              <td>
+                {{ order.shipping_location }} <br />
+                {{ order.detail_address }}
+              </td>
+              <td>
+                {{ order.product_name }} <br />
+                {{ order.total_weight }}kg
+              </td>
+              <td>Rp {{ '{:,.0f}'.format(order.final_price) }}</td>
+              <td>{{ order.status }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-danger rounded-5"
+                  data-bs-toggle="modal"
+                  data-bs-target="#orderModal"
+                  data-order-id="{{ order._id }}"
+                  data-order-date="{{ order.order_date }}"
+                  data-nama="{{ order.nama }}"
+                  data-product-name="{{ order.product_name }}"
+                  data-final-price="{{ order.final_price }}"
+                  data-status="{{ order.status }}"
+                  data-payment-proof="{{ order.payment_proof }}"
+                >
+                  Detail
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal for Order Details and Status Update -->
+    <div
+      class="modal fade"
+      id="orderModal"
+      tabindex="-1"
+      aria-labelledby="orderModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="orderModalLabel">Detail Pesanan</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form
+              id="orderForm"
+              method="POST"
+              action="{{ url_for('update_order_status') }}"
+            >
+              <input type="hidden" name="order_id" id="order_id" />
+              <div class="mb-3">
+                <label for="order_date" class="form-label"
+                  >Tanggal Pemesanan</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="order_date"
+                  readonly
+                />
+              </div>
+              <div class="mb-3">
+                <label for="nama" class="form-label">Nama User</label>
+                <input type="text" class="form-control" id="nama" readonly />
+              </div>
+              <div class="mb-3">
+                <label for="product_name" class="form-label">Jenis Ikan</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="product_name"
+                  readonly
+                />
+              </div>
+              <div class="mb-3">
+                <label for="final_price" class="form-label">Total</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="final_price"
+                  readonly
+                />
+              </div>
+              <div class="mb-3">
+                <label for="status" class="form-label">Status Pesanan</label>
+                <select class="form-select" id="status" name="status">
+                  <option value="Sedang Dikemas">Sedang Dikemas</option>
+                  <option value="Sedang Dalam Perjalanan">
+                    Sedang Dalam Perjalanan
+                  </option>
+                  <option value="Pesanan Selesai">Pesanan Selesai</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="payment_proof" class="form-label"
+                  >Bukti Pembayaran</label
+                >
+                <div id="payment_proof_container">
+                  <img
+                    id="payment-proof-img"
+                    src=""
+                    alt="Bukti Pembayaran"
+                    class="img-fluid"
+                  />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Update Status
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daftar Pengguna -->
+    <main class="container mt-5">
+      <h1 id="pengguna">Daftar Pengguna</h1>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="thead-color">
+            <tr>
+              <th>No</th>
+              <th>Nama</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Nomor Telepon</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="tbody-color">
+            {% for user in users %}
+            <tr>
+              <td>{{ user.index }}</td>
+              <td>{{ user.nama }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.nohp }}</td>
+              <td>
+                <form
+                  action="{{ url_for('delete_user', user_id=user._id) }}"
+                  method="POST"
+                  style="display: inline"
+                >
+                  <button
+                    type="submit"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');"
+                  >
+                    Hapus
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <!-- End Daftar Pengguna -->
+
+    <!-- Kontak Section -->
+    <section id="kontak" class="py-5">
+      <div class="container my-5">
+        <h1 class="mb-5">Pesan yang Diterima</h1>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>No Telp</th>
+                <th>Pesan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for message in messages %}
+              <tr>
+                <td>{{ message.name }}</td>
+                <td>{{ message.phone }}</td>
+                <td>{{ message.message }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <h5>Kontak Kami</h5>
+            <p>
+              Alamat: Jl. Contoh No.123, Kota, Provinsi<br />
+              Telepon: (123) 456-7890<br />
+              Email: info@example.com
+            </p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h5>Tentang Kami</h5>
+            <p>
+              Kami adalah distributor ikan tuna dan cakalang yang berdedikasi
+              untuk menyediakan produk berkualitas tinggi kepada pelanggan kami.
+            </p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h5>Ikuti Kami</h5>
+            <a
+              href="https://www.instagram.com/tampunganglawo?igsh=MXNkZzd2ZG9waXU3bg=="
+              target="_blank"
+              class="me-3"
+            >
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a
+              href="https://web.facebook.com/profile.php?id=61558268617422"
+              target="_blank"
+              class="me-3"
+            >
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a
+              href="mailto:lawotampungang@gmail.com"
+              target="_blank"
+              class="me-3"
+            >
+              <i class="bi bi-envelope bi-email"></i>
+            </a>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-12 text-center">
+            <p class="mb-0">
+              &copy; 2024 Nama Perusahaan. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+
+  <script>
+    document
+      .getElementById("tambahProdukForm")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch("/add_product", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              return response.text();
+            }
+          })
+          .then((result) => {
+            // Menampilkan notifikasi atau menangani hasil tambahan produk
+            alert("Produk berhasil ditambahkan!");
+            location.reload(); // Memuat ulang halaman untuk menampilkan produk terbaru
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan saat menambahkan produk.");
+          });
+      });
+  </script>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Include the Font Awesome JavaScript library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>  -->
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+
+  <script>
+    // Fungsi untuk membuka modal Edit Produk dan mengisi data yang ada
+    function openEditProductModal(productId) {
+      // Ambil data produk dari elemen HTML atau menggunakan AJAX/fetch dari server
+      fetch(`/product/${productId}`)
+        .then((response) => response.json())
+        .then((product) => {
+          if (product._id) {
+            // Isi form modal dengan data produk
+            document.getElementById("editProductId").value = product._id;
+            document.getElementById("editProductName").value = product.name;
+            document.getElementById("editProductPrice").value = product.price;
+            document.getElementById("editProductStock").value = product.stock;
+            document.getElementById("editProductDescription").value =
+              product.description;
+
+            // Buka modal Edit Produk
+            const editModal = new bootstrap.Modal(
+              document.getElementById("editProductModal")
+            );
+            editModal.show();
+          } else {
+            alert("Gagal mengambil data produk!");
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+
+    // Event listener untuk form Edit Produk
+    document
+      .getElementById("editProductForm")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Ambil data dari form
+        const formData = new FormData(this);
+        const productId = document.getElementById("editProductId").value;
+
+        // Lakukan proses update ke server menggunakan AJAX atau fetch
+        fetch(`/edit_product/${productId}`, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Update berhasil, tutup modal dan refresh halaman atau update UI
+              alert("Produk berhasil diperbarui!");
+              location.reload(); // Refresh halaman atau update UI secara dinamis
+            } else {
+              // Handle error
+              alert("Gagal memperbarui produk!");
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      });
+
+    // Fungsi untuk membuka modal Hapus Produk
+    function openDeleteProductModal(productId) {
+      document.getElementById("hapusProductId").value = productId;
+      const deleteModal = new bootstrap.Modal(
+        document.getElementById("hapusProdukModal")
+      );
+      deleteModal.show();
+    }
+
+    // Event listener untuk form Hapus Produk
+    document
+      .getElementById("hapusProdukForm")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+        fetch(
+          `/delete_product/${document.getElementById("hapusProductId").value}`,
+          {
+            method: "GET",
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("Produk berhasil dihapus!");
+              location.reload();
+            } else {
+              alert("Gagal menghapus produk!");
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var orderModal = document.getElementById("orderModal");
+      orderModal.addEventListener("show.bs.modal", function (event) {
+        var button = event.relatedTarget;
+        var orderId = button.getAttribute("data-order-id");
+        var orderDate = button.getAttribute("data-order-date");
+        var nama = button.getAttribute("data-nama");
+        var productName = button.getAttribute("data-product-name");
+        var finalPrice = button.getAttribute("data-final-price");
+        var status = button.getAttribute("data-status");
+        var paymentProofFile = button.getAttribute("data-payment-proof");
+
+        var modalOrderId = document.getElementById("order_id");
+        var modalOrderDate = document.getElementById("order_date");
+        var modalNama = document.getElementById("nama");
+        var modalProductName = document.getElementById("product_name");
+        var modalFinalPrice = document.getElementById("final_price");
+        var modalStatus = document.getElementById("status");
+        var modalPaymentProof = document
+          .getElementById("payment_proof_container")
+          .querySelector("img");
+
+        // Set the input values
+        modalOrderId.value = orderId;
+        modalOrderDate.value = orderDate;
+        modalNama.value = nama;
+        modalProductName.value = productName;
+
+        // Format final price with thousands separators and currency symbol
+        modalFinalPrice.value =
+          "Rp " +
+          Number(finalPrice).toLocaleString("id-ID", {
+            minimumFractionDigits: 0,
+          });
+
+        modalStatus.value = status;
+        modalPaymentProof.src = paymentProofFile;
+        modalPaymentProof.alt = "Bukti Pembayaran: " + paymentProofFile;
+      });
+    });
+  </script>
+</html>

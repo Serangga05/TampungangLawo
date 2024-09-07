@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Pesanan</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      $("#modal-1").on("show.bs.modal", function () {
+        // Order status: 0 = Pesanan Diterima, 1 = Bukti Pembayaran Diunggah, dst.
+        const currentStatus = 2; // Contoh status pesanan sedang dikemas
+        updateOrderStatus(currentStatus, 1);
+      });
+      function updateOrderStatus(orderStatus, modalIndex) {
+        const steps = document.querySelectorAll(`#modal-${modalIndex} .step`);
+
+        // Loop through each step and apply the appropriate class based on the order status
+        steps.forEach((step, index) => {
+          step.classList.remove("active", "completed");
+
+          if (index < orderStatus) {
+            step.classList.add("completed");
+          } else if (index === orderStatus) {
+            step.classList.add("active");
+          }
+        });
+      }
+    </script>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+          url("{{ url_for('static', filename='img/123.jpeg') }}") no-repeat
+            center center fixed;
+        background-size: cover;
+        color: #333;
+      }
+      .container {
+        margin-top: 30px;
+      }
+      .back-btn {
+        background-color: #4dcaff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+      .back-btn:hover {
+        background-color: #3a9bdc;
+      }
+      .order-card {
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 15px;
+        position: relative;
+      }
+      .order-image {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .order-image img {
+        width: 100%;
+        max-width: 600px; /* Ukuran gambar yang lebih besar */
+        height: auto;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        margin-bottom: 10px; /* Jarak antara gambar dan tombol */
+      }
+
+      .order-details {
+        flex: 1;
+      }
+      .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .card-body {
+        padding: 0;
+      }
+      .btn-custom {
+        background-color: #4dcaff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-top: 20px;
+        display: block;
+        margin-left: auto;
+      }
+      .btn-custom:hover {
+        background-color: #3a9bdc;
+      }
+      #lacak {
+        margin-right: 265px;
+      }
+      .modal-content {
+        border-radius: 10px;
+      }
+      .no-orders {
+        margin-top: 30px;
+        font-size: 1.2rem;
+        color: #fff;
+      }
+      @media (max-width: 768px) {
+        .order-card {
+          flex-direction: column;
+          align-items: center;
+        }
+        .order-image img {
+          width: 100%;
+          height: auto;
+        }
+        .order-details {
+          padding-left: 0;
+          text-align: center;
+        }
+        .btn-custom {
+          margin-top: 15px;
+        }
+      }
+      .tracking-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+        position: relative;
+      }
+
+      .step {
+        text-align: center;
+        width: 18%;
+        position: relative;
+      }
+
+      .step .icon {
+        background-color: #ddd;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        transition: background-color 0.3s ease;
+      }
+
+      .step .icon i {
+        font-size: 24px;
+        color: #fff;
+      }
+
+      .step p {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #333;
+      }
+
+      .step.active .icon {
+        background-color: #4dcaff;
+      }
+
+      .step.completed .icon {
+        background-color: #4dcaff;
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .tracking-status::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background-color: #ddd;
+        top: 50%;
+        left: 0;
+        z-index: 0;
+      }
+
+      .step.active::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        height: 4px;
+        background-color: #4dcaff;
+        width: 100%;
+        z-index: 1;
+        transform: translateY(-50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="{{ url_for('user') }}" class="back-btn">Kembali</a>
+      <h1 class="text-center mb-4 text-light">Daftar Pesanan</h1>
+
+      {% if orders %}
+      <div class="order-summary">
+        {% for order in orders %}
+        <div class="order-card">
+          <div class="order-details">
+            <h4 class="card-title">{{ order.product_name }}</h4>
+            <p><strong>Nama:</strong> {{ order.nama }}</p>
+            <p><strong>Nomor HP:</strong> {{ order.nohp }}</p>
+            <p><strong>Tanggal Pemesanan:</strong> {{ order.order_date }}</p>
+            <p>
+              <strong>Estimasi Pengiriman:</strong> {{
+              order.estimated_delivery_date }}
+            </p>
+            <p>
+              <strong>Alamat Pengiriman:</strong> {{ order.detail_address }}
+            </p>
+            <p>
+              <strong>Lokasi Pengiriman:</strong> {{ order.shipping_location }}
+            </p>
+            <p><strong>Biaya Pengiriman:</strong> {{ order.shipping_cost }}</p>
+            <p><strong>Berat Total:</strong> {{ order.total_weight }} kg</p>
+            <p>
+              <strong>Total Harga:</strong> Rp {{
+              '{:,.0f}'.format(order.total_price) }}
+            </p>
+            <p>
+              <strong>Harga Akhir:</strong> Rp {{
+              '{:,.0f}'.format(order.final_price) }}
+            </p>
+          </div>
+          <div class="order-image">
+            <img
+              src="{{ url_for('static', filename='img/' + order.product_image.split('/')[-1]) }}"
+              alt="{{ order.product_name }}"
+            />
+            <button
+              class="btn-custom"
+              id="lacak"
+              data-toggle="modal"
+              data-target="#modal-{{ loop.index }}"
+            >
+              Lacak
+            </button>
+          </div>
+
+          <!-- Modal -->
+
+          <div
+            class="modal fade"
+            id="modal-{{ loop.index }}"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="modalLabel-{{ loop.index }}"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalLabel-{{ loop.index }}">
+                    Status Pesanan
+                  </h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <!-- Progress Tracker -->
+                  <div class="tracking-status">
+                    <!-- Step 1: Pesanan Diterima -->
+                    <div
+                      class="step {% if order.status in ['Pesanan Diterima', 'Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                    >
+                      <div class="icon">
+                        <i class="fas fa-check-circle"></i>
+                      </div>
+                      <p>Pesanan Diterima</p>
+                    </div>
+
+                    <!-- Step 2: Bukti Pembayaran Diunggah -->
+                    <div
+                      class="step {% if order.status in ['Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                    >
+                      <div class="icon">
+                        <i class="fas fa-file-upload"></i>
+                      </div>
+                      <p>Bukti Pembayaran Diunggah</p>
+                    </div>
+
+                    <!-- Step 3: Sedang Dikemas -->
+                    <div
+                      class="step {% if order.status in ['Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                    >
+                      <div class="icon">
+                        <i class="fas fa-box"></i>
+                      </div>
+                      <p>Sedang Dikemas</p>
+                    </div>
+
+                    <!-- Step 4: Sedang Dalam Perjalanan -->
+                    <div
+                      class="step {% if order.status in ['Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                    >
+                      <div class="icon">
+                        <i class="fas fa-shipping-fast"></i>
+                      </div>
+                      <p>Sedang Dalam Perjalanan</p>
+                    </div>
+
+                    <!-- Step 5: Pesanan Selesai -->
+                    <div
+                      class="step {% if order.status == 'Pesanan Selesai' %}completed{% endif %}"
+                    >
+                      <div class="icon">
+                        <i class="fas fa-box-open"></i>
+                      </div>
+                      <p>Pesanan Selesai</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-dismiss="modal"
+                  >
+                    Tutup
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-center no-orders">Tidak ada pesanan yang ditemukan.</p>
+      {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

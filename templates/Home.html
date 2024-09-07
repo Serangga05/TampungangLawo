@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tampunganglawo</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
+    />
+
+    <!-- CSS -->
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .navbar {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        padding: 0.5rem 1rem;
+      }
+      .navbar-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .navbar-brand {
+        margin-left: 2rem;
+        margin-right: 2rem;
+      }
+      .navbar-nav {
+        margin: 0 auto;
+      }
+      .nav-item {
+        margin-left: 1rem;
+      }
+      .nav-link {
+        font-size: 1.25rem;
+        padding: 0.75rem 1rem;
+        transition: background-color 0.3s;
+      }
+      .nav-link:hover {
+        background-color: #4dcaff;
+        border-radius: 0.25rem;
+      }
+      .navbar-nav.ms-auto {
+        margin-right: 2rem;
+      }
+      .nav-item .nav-link {
+        font-size: 1.5rem;
+      }
+      .navbar-nav .nav-item .nav-link {
+        margin-left: 1rem;
+      }
+      .dropdown-menu {
+        min-width: 200px;
+        font-size: 1.25rem;
+      }
+      .dropdown-item {
+        padding: 0.75rem 1.5rem;
+      }
+      .bi {
+        font-size: 2rem;
+      }
+      .notification-dropdown,
+      .cart-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+      .notification-dropdown.show,
+      .cart-dropdown.show {
+        display: block;
+      }
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background-image: url("../static/img/123.jpeg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        -webkit-mask-image: linear-gradient(
+          rgba(0, 0, 0, 1) 85%,
+          rgba(0, 0, 0, 0)
+        );
+        mask-image: linear-gradient(rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0));
+      }
+
+      /* .hero::after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 30%;
+        bottom: 0;
+        background: linear-gradient(0deg, rgba(1, 1, 3, 1) 8%, rgba(255, 255, 255, 0) 50%);
+      } */
+
+      .hero .mask-container {
+        position: absolute;
+        /* background: salmon; */
+        inset: 0;
+        -webkit-mask-image: url("../static/img/123.svg");
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: cover;
+        -webkit-mask-position: center;
+      }
+
+      .hero .content {
+        padding: 1.4rem 7%;
+        /* max-width: 60rem; */
+        width: 100%;
+        text-align: center;
+        position: fixed;
+        top: 130px;
+      }
+
+      .hero .content h1 {
+        font-size: 5em;
+        color: #fff;
+        text-shadow: 1px 1px 3px rgba(1, 1, 3, 0.5);
+        line-height: 1.2;
+      }
+
+      .hero .content h1 span {
+        color: #46a9d3;
+      }
+
+      .hero .content p {
+        font-size: 1.6rem;
+        margin-top: 1rem;
+        line-height: 1.4;
+        font-weight: 100;
+        text-shadow: 1px 1px 3px rgba(1, 1, 3, 0.5);
+        mix-blend-mode: difference;
+      }
+
+      .hero .content .cta {
+        margin-top: 1rem;
+        display: inline-block;
+        padding: 1rem 3rem;
+        font-size: 1.4rem;
+        color: #fff;
+        background-color: #46a9d3;
+        border-radius: 0.5rem;
+        box-shadow: 1px 1px 3px rgba(1, 1, 3, 0.5);
+      }
+      body {
+        padding-top: 90px;
+        background-color: #ffffff;
+      }
+
+      .about-section {
+        padding: 4rem 0;
+      }
+      .about-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+      .about-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .about-image {
+        flex: 1;
+        max-width: 400px;
+        margin-right: 2rem;
+      }
+      .about-text {
+        flex: 2;
+        font-size: 1.25rem;
+      }
+      #produk {
+        padding-top: 200px;
+        padding-bottom: 60px;
+      }
+      #produk .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+      #produk .card:hover {
+        transform: scale(1.05);
+      }
+      #produk .card img {
+        max-height: 200px;
+        object-fit: cover;
+      }
+      #produk .card-body {
+        text-align: center;
+      }
+      #tentang-kami {
+        padding-top: 110px;
+      }
+      #kontak {
+        padding-top: 90px;
+      }
+      .footer {
+        background-color: #4dcaff;
+        color: #ffffff;
+        text-align: center;
+      }
+      .footer h5 {
+        margin-bottom: 1rem;
+        font-weight: bold;
+      }
+      .footer p {
+        margin-bottom: 0.5rem;
+      }
+      .footer .bi {
+        font-size: 1.5rem;
+        margin: 0 0.75rem; /* Mengubah margin menjadi 0.75rem untuk jarak yang lebih rapi */
+        transition: transform 0.3s;
+      }
+      .footer .bi:hover {
+        transform: scale(1.2);
+      }
+      .footer .bi-instagram,
+      .footer .bi-facebook,
+      .footer .bi-email {
+        color: #000000; /* Warna hitam untuk ikon */
+      }
+      .footer .bi-instagram:hover,
+      .footer .bi-facebook:hover,
+      .footer .bi-email:hover {
+        color: #ffffff; /* Warna putih untuk ikon saat dihover */
+      }
+
+      .btn-primary {
+        background-color: #4dcaff;
+        border-color: #4dcaff;
+      }
+      .btn-primary:hover {
+        background-color: #36b5ff;
+        border-color: #36b5ff;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-white">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="../static/img/logo.png" alt="Logo" class="navbar-logo" />
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#"
+                >Beranda</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#tentang-kami">Tentang Kami</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link active" href="#produk">Produk</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link active" href="#kontak">Kontak</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle"></i>
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li><a class="dropdown-item" href="/login">Masuk</a></li>
+                <li><a class="dropdown-item" href="/sign_up">Daftar</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Hero Section start -->
+    <section class="hero" id="home">
+      <div class="mask-container">
+        <main class="content">
+          <h1>Distributor Ikan <span>Tuna</span> dan <span>Cakalang</span></h1>
+          <!-- <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Accusantium, enim.
+              </p> -->
+        </main>
+      </div>
+    </section>
+    <!-- Hero Section end -->
+
+    <!-- Tentang Kami Section -->
+    <section id="tentang-kami" class="about-section py-5">
+      <div class="container">
+        <h2 class="text-center mb-5">Tentang Kami</h2>
+        <div class="row">
+          <!-- Poin 1: Apa itu UMKM Tampunganglawo -->
+          <div class="col-md-6 mb-4">
+            <div class="d-flex align-items-center mb-4">
+              <i class="bi bi-cart fs-3 me-3 text-primary"></i>
+              <div>
+                <h4>Apa Itu UMKM Tampunganglawo?</h4>
+                <p>
+                  UMKM Tampunganglawo adalah sebuah usaha mikro, kecil, dan
+                  menengah yang berlokasi di Bitung, Sulawesi Utara. Kami
+                  bergerak dalam bidang penjualan dan distribusi ikan segar,
+                  terutama cakalang dan tuna. Dengan dedikasi dan komitmen
+                  tinggi, kami selalu memastikan bahwa setiap ikan yang kami
+                  kirimkan adalah ikan yang berkualitas tinggi dan segar.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Poin 2: Sumber Kualitas Ikan -->
+          <div class="col-md-6 mb-4">
+            <div class="d-flex align-items-center mb-4">
+              <i class="bi bi-people fs-3 me-3 text-primary"></i>
+              <div>
+                <h4>Sumber Kualitas Ikan</h4>
+                <p>
+                  Kami mendapatkan ikan dari sumber-sumber terpercaya yang telah
+                  melalui seleksi ketat untuk memastikan kualitas dan kesegaran.
+                  Kami bekerja sama dengan nelayan lokal yang berpengalaman
+                  untuk mendapatkan ikan segar dengan kualitas terbaik.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Poin 3: Pengiriman Ikan -->
+          <div class="col-md-6 mb-4">
+            <div class="d-flex align-items-center mb-4">
+              <i class="bi bi-truck fs-3 me-3 text-primary"></i>
+              <div>
+                <h4>Pengiriman Ikan</h4>
+                <p>
+                  Kami menyediakan layanan pengiriman ikan dengan memastikan
+                  ikan tetap segar sampai ke tangan pelanggan. Kami melayani
+                  pengiriman ke Manado dan sekitarnya dengan biaya ongkos kirim
+                  sebesar Rp500.000 untuk maksimal 1.000 kg ikan.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Poin 4: Cara Pemesanan -->
+          <div class="col-md-6 mb-4">
+            <div class="d-flex align-items-center mb-4">
+              <i class="bi bi-envelope fs-3 me-3 text-primary"></i>
+              <div>
+                <h4>Cara Pemesanan</h4>
+                <p>
+                  Untuk melakukan pemesanan, Anda dapat menghubungi kami melalui
+                  kontak yang tersedia di halaman ini. Minimal pemesanan adalah
+                  100 kg ikan. Kami akan memproses pesanan Anda dan mengatur
+                  pengiriman sesuai kebutuhan.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Produk Section -->
+    <section id="produk" class="py-5">
+      <div class="container">
+        <h2 class="text-center mb-5">Produk</h2>
+        <div class="row">
+          {% for product in products %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img
+                src="{{ url_for('static', filename='img/' + product['image']) }}"
+                class="card-img-top"
+                alt="{{ product['name'] }}"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ product['name'] }}</h5>
+                <p class="card-text">Harga: Rp{{ product['price'] }}</p>
+                <p class="card-text">Stok: {{ product['stock'] }} kg</p>
+                <p class="card-text">{{ product['description'] }}</p>
+                <a
+                  href="javascript:void(0)"
+                  class="btn btn-primary"
+                  onclick="redirectToLogin()"
+                >
+                  <i class="bi bi-cart"></i> Beli
+                </a>
+                <a
+                  href="#"
+                  class="btn btn-secondary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detailModal"
+                  data-name="{{ product['name'] }}"
+                  data-price="Rp{{ product['price'] }}"
+                  data-stock="{{ product['stock'] }} kg"
+                  data-description="{{ product['description'] }}"
+                >
+                  <i class="bi bi-eye"></i> Detail
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- Detail Modal -->
+    <div
+      class="modal fade"
+      id="detailModal"
+      tabindex="-1"
+      aria-labelledby="detailModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="detailModalLabel">Detail Produk</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h5 id="modalProductName"></h5>
+            <p><strong>Harga:</strong> <span id="modalProductPrice"></span></p>
+            <p><strong>Stok:</strong> <span id="modalProductStock"></span></p>
+            <p id="modalProductDescription"></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kontak Section -->
+    <section id="kontak" class="py-5">
+      <div class="container">
+        <h2 class="text-center mb-5">Kontak</h2>
+        <div class="row">
+          <div class="col-12 col-md-6 mb-4">
+            <!-- Google Maps Embed -->
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d989.2294341909065!2d125.19792898047768!3d1.4512176336460465!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x328701004b044e3f%3A0xb6bf75beedec76b3!2sTampunganglawo!5e0!3m2!1sid!2sid!4v1722745084995!5m2!1sid!2sid"
+              width="100%"
+              height="300"
+              style="border: 0"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+          <div class="col-12 col-md-6 mb-4">
+            <!-- Contact Form -->
+            <form
+              id="contactForm"
+              action="{{ url_for('submit_message_user') }}"
+              method="POST"
+              onsubmit="return handleSubmit()"
+            >
+              <div class="mb-3">
+                <label for="name" class="form-label">Nama</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">No Telp</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="phone"
+                  name="phone"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="message" class="form-label">Pesan</label>
+                <textarea
+                  class="form-control"
+                  id="message"
+                  name="message"
+                  rows="5"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Kirim</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <h5>Kontak Kami</h5>
+            <p>
+              Alamat: Jl. Contoh No.123, Kota, Provinsi<br />
+              Telepon: (123) 456-7890<br />
+              Email: info@example.com
+            </p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h5>Tentang Kami</h5>
+            <p>
+              Kami adalah distributor ikan tuna dan cakalang yang berdedikasi
+              untuk menyediakan produk berkualitas tinggi kepada pelanggan kami.
+            </p>
+          </div>
+          <div class="col-md-4 mb-3">
+            <h5>Ikuti Kami</h5>
+            <a
+              href="https://www.instagram.com/tampunganglawo?igsh=MXNkZzd2ZG9waXU3bg=="
+              target="_blank"
+              class="me-3"
+            >
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a
+              href="https://web.facebook.com/profile.php?id=61558268617422"
+              target="_blank"
+              class="me-3"
+            >
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a
+              href="mailto:lawotampungang@gmail.com"
+              target="_blank"
+              class="me-3"
+            >
+              <i class="bi bi-envelope bi-email"></i>
+            </a>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-12 text-center">
+            <p class="mb-0">
+              &copy; 2024 Nama Perusahaan. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      function handleSubmit() {
+        // Tampilkan alert jika form berhasil dikirim
+        alert("Pesan berhasil dikirim!");
+        return true; // Biarkan form tetap terkirim
+      }
+    </script>
+
+    <script>
+      document
+        .getElementById("notificationIcon")
+        .addEventListener("click", function () {
+          document
+            .getElementById("notificationDropdown")
+            .classList.toggle("show");
+        });
+
+      document
+        .getElementById("cartIcon")
+        .addEventListener("click", function () {
+          document.getElementById("cartDropdown").classList.toggle("show");
+        });
+    </script>
+
+    <!-- JavaScript to handle modal data population -->
+    <script>
+      var detailModal = document.getElementById("detailModal");
+      detailModal.addEventListener("show.bs.modal", function (event) {
+        var button = event.relatedTarget;
+        var name = button.getAttribute("data-name");
+        var price = button.getAttribute("data-price");
+        var stock = button.getAttribute("data-stock");
+        var description = button.getAttribute("data-description");
+
+        var modalTitle = detailModal.querySelector(".modal-title");
+        var modalProductName = detailModal.querySelector("#modalProductName");
+        var modalProductPrice = detailModal.querySelector("#modalProductPrice");
+        var modalProductStock = detailModal.querySelector("#modalProductStock");
+        var modalProductDescription = detailModal.querySelector(
+          "#modalProductDescription"
+        );
+
+        modalTitle.textContent = "Detail Produk - " + name;
+        modalProductName.textContent = name;
+        modalProductPrice.textContent = price;
+        modalProductStock.textContent = stock;
+        modalProductDescription.textContent = description;
+      });
+    </script>
+
+    <script>
+      function redirectToLogin() {
+        alert("Harus login terlebih dahulu");
+        window.location.href = "/login";
+      }
+    </script>
+  </body>
+</html>

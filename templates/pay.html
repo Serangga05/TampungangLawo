@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halaman Pembayaran</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+          url("{{ url_for('static', filename='img/123.jpeg') }}") no-repeat
+            center center fixed;
+        background-size: cover;
+        color: #333;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 25px;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+      }
+      .payment-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .payment-container h2 {
+        margin-bottom: 30px;
+        color: #333;
+      }
+      .total-payment {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2d2d2d;
+        margin-bottom: 20px;
+      }
+      .bank-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+      .bank-info img {
+        width: 80px;
+        height: 80px;
+        margin-right: 15px;
+        object-fit: contain;
+      }
+      .bank-details {
+        flex: 1;
+      }
+      .bank-details p {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #555;
+      }
+      .form-group label {
+        font-weight: bold;
+      }
+      .image-preview {
+        margin-top: 20px;
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        display: none;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 5px;
+      }
+      .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="payment-container">
+      <h2 class="text-center">Pembayaran</h2>
+
+      <p class="total-payment">
+        Total Pembayaran: <span>{{ total_bayar }}</span>
+        <!-- Sudah diformat di backend -->
+      </p>
+
+      <div class="bank-info">
+        <img
+          src="{{ url_for('static', filename='img/bri.png') }}"
+          alt="BRI Logo"
+        />
+        <div class="bank-details">
+          <p>Bank BRI</p>
+          <p>No. Rekening: 512201022358539</p>
+          <p>A.N Rangga Jufry Serang</p>
+        </div>
+      </div>
+
+      <div class="bank-info">
+        <img
+          src="{{ url_for('static', filename='img/dana.png') }}"
+          alt="DANA Logo"
+        />
+        <div class="bank-details">
+          <p>DANA</p>
+          <p>Nomor: 0897-8068-620</p>
+          <p>A.N Rangga Jufri Serang</p>
+        </div>
+      </div>
+
+      <div class="bank-info">
+        <img
+          src="{{ url_for('static', filename='img/ovo.png') }}"
+          alt="OVO Logo"
+        />
+        <div class="bank-details">
+          <p>OVO</p>
+          <p>Nomor: 0897-8068-6200</p>
+          <p>A.N Rangga Jufri Serang</p>
+        </div>
+      </div>
+
+      <form
+        action="{{ url_for('upload_bukti') }}"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <div class="form-group">
+          <label for="payment_proof">Unggah Bukti Pembayaran</label>
+          <input
+            type="file"
+            class="form-control-file"
+            id="payment_proof"
+            name="payment_proof"
+            accept="image/*"
+            onchange="previewImage(event)"
+            required
+          />
+        </div>
+        <input
+          type="hidden"
+          name="order_id"
+          value="{{ request.args.get('order_id') }}"
+        />
+        <img id="image_preview" class="image-preview" />
+        <button type="submit" class="btn btn-primary btn-block">
+          Upload Bukti Pembayaran
+        </button>
+      </form>
+    </div>
+  </body>
+
+  <script>
+    function previewImage(event) {
+      const preview = document.getElementById("image_preview");
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        preview.src = reader.result;
+        preview.style.display = "block";
+      };
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</html>

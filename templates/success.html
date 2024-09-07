@@ -1,0 +1,22 @@
+<!-- success.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Sukses</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Pesanan Berhasil Dibuat!</h2>
+      <p>Terima kasih telah memesan. Pesanan Anda sedang diproses.</p>
+      <a href="{{ url_for('home_page') }}" class="btn btn-primary"
+        >Kembali ke Beranda</a
+      >
+    </div>
+  </body>
+</html>

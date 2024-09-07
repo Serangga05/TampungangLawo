@@ -1,0 +1,16 @@
+{% if cart_items %} {% for item in cart_items %}
+<div class="cart-item" id="cart-item-{{ item['_id'] }}">
+  <p><strong>{{ item.product_name }}</strong></p>
+  <p>Jumlah: {{ item.quantity }} kg</p>
+  <p>Total Harga: Rp{{ "{:,.2f}".format(item.total_price) }}</p>
+  <button
+    class="btn btn-danger btn-sm remove-item"
+    data-product-id="{{ item['_id'] }}"
+  >
+    Hapus
+  </button>
+  <hr />
+</div>
+{% endfor %} {% else %}
+<p>Your cart is empty</p>
+{% endif %}
