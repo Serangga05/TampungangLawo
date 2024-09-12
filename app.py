@@ -344,6 +344,9 @@ def submit_order():
         final_price = request.form['final_price']
         product_name = request.form['product_name']
         product_image = request.form['product_image']
+        map_points = request.form['map_points']
+        estimasi_jarak = request.form['estimasi_jarak']
+        estimasi_pengiriman = request.form['estimasi_pengiriman']
 
         # Buat dokumen untuk disimpan di database
         doc = {
@@ -359,6 +362,9 @@ def submit_order():
             "final_price": final_price,
             "product_name": product_name,
             "product_image": product_image,
+            "map_points": map_points,
+            "estimasi_jarak": estimasi_jarak,
+            "estimasi_pengiriman": estimasi_pengiriman,
             "status": "Pesanan Diterima"
         }
 
@@ -417,7 +423,7 @@ def pesanan():
         if user:
             # Ambil pesanan hanya milik pengguna yang sedang login berdasarkan nama pengguna
             orders = list(db.orders.find({'nama': user['nama']}))
-
+            # print(orders)
             # Konversi harga menjadi float jika diperlukan
             for order in orders:
                 order['total_price'] = float(order.get('total_price', 0))
@@ -711,6 +717,28 @@ def delete_user(user_id):
             flash("Pengguna tidak ditemukan!", "danger")
         
         return redirect(url_for('admin'))  # Update 'admin' to the correct endpoint if needed
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
+
+@app.route("/admin/update_kurir_position/<id_order>", methods=["GET"])
+def update_kurir_position(id_order):
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        order = db.orders.find_one({"_id": ObjectId(id_order)})
+        return render_template('update_kurir_position.html', order=order)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
+
+@app.route("/admin/set_kurir_position/<id_order>/<data_points>", methods=["GET"])
+def set_kurir_position(id_order,data_points):
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        # order = db.orders.find_one({"_id": ObjectId(id_order)})
+        db.orders.update_one(
+            {"_id": ObjectId(id_order)},    # Filter by order ID
+            {"$set": {"kurir_position": data_points}}  # Set new value for 'kurir_position'
+        )
+        return jsonify({'valid':True})
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for('loginadmin'))
 

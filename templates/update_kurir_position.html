@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Tampunganglawo</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
+    />
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <!-- CSS -->
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.css" />
+    <script src="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.js"></script>
+    <!-- Include Leaflet Routing Machine library -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+    </script>
+    <script>
+     
+    </script>
+  </head>
+  <body>
+    <div id=top_layer_map></div>
+  </body>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+  <!-- Include the Font Awesome JavaScript library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>  -->
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+
+  
+  <script>
+    const top_layer_map = document.querySelector('#top_layer_map');
+    top_layer_map.style.width = innerWidth + 'px';
+    top_layer_map.style.height = innerHeight + 'px';
+
+    {% if order.kurir_position %}
+    const kurir_position = '{{order.kurir_position}}'.split(',');
+    {% else %}
+    const kurir_position = '{{order.map_points}}'.split(',').slice(0,2);
+    {% endif %}
+    const target_position = '{{order.map_points}}'.split(',').slice(2,4);
+    const map = new L.map('top_layer_map',{
+      center:kurir_position,
+      zoom:3
+    });
+    let layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+    map.addLayer(layer);
+    let target_lacak = L.marker(target_position,{
+      icon:L.icon({
+          iconUrl: 'https://png.pngtree.com/png-clipart/20230221/original/pngtree-location-home-icon-pin-deal-clipart-png-image_8962267.png', // External image URL
+          iconSize: [48, 48], // Size of the icon [width, height]
+          iconAnchor: [24, 48], // Point of the icon that corresponds to the marker's location
+          popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+      })
+    }).addTo(map).bindPopup('Target Pengiriman').openPopup();
+    let kurir_lacak = L.marker(kurir_position,{
+      icon:L.icon({
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/6951/6951721.png', // External image URL
+          iconSize: [32, 32], // Size of the icon [width, height]
+          iconAnchor: [16, 32], // Point of the icon that corresponds to the marker's location
+          popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+      })
+    }).addTo(map).bindPopup('Posisi Kurir').openPopup();
+    let route = L.Routing.control({
+      createMarker: function() { return null; }, // Hides markers if needed
+      show: false,
+      waypoints: [
+        L.latLng(kurir_position[0], kurir_position[1]),  // Start point
+        L.latLng(target_position[0],target_position[1])     // End point
+      ],
+      routeWhileDragging: true   // Allows the route to be updated while dragging
+    }).addTo(map);
+    route.on('routesfound', function(e) {
+      document.querySelector('.leaflet-top.leaflet-right').remove();
+    });
+    map.on('click',async (e)=>{
+      const data_pos = `${e.latlng.lat},${e.latlng.lng}`;
+      let response = await fetch('/admin/set_kurir_position/{{order._id}}/'+data_pos);
+      if((await response.json()).valid)
+        return location.reload();
+      else alert('Gagal memperbarui posisi kurir!');
+    })
+  </script>
+</html>
