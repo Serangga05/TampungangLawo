@@ -222,6 +222,90 @@
         z-index: 1;
         transform: translateY(-50%);
       }
+
+            /* Modal Header */
+      .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+      }
+
+      .close {
+        font-size: 1.5rem;
+        color: #000;
+      }
+
+      /* Modal Body */
+      .modal-body {
+        padding: 1.5rem;
+      }
+
+      .payment-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .total-payment {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .bank-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .bank-info img {
+        width: 50px;
+        height: auto;
+      }
+
+      .bank-details {
+        flex: 1;
+      }
+
+      .bank-details p {
+        margin: 0;
+        font-size: 0.875rem;
+      }
+
+      /* File input and preview */
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      #payment_proof {
+        margin-bottom: 1rem;
+      }
+
+      #image_preview {
+        display: block;
+        max-width: 100%;
+        max-height: 200px;
+        margin-top: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+      }
+
+      /* Modal Footer */
+      .modal-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+      }
+
+      .btn-block {
+        width: 100%;
+      }
+
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -231,300 +315,393 @@
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
   </head>
   <body>
-    <div class="container">
+    <div>
       <a href="{{ url_for('user') }}" class="back-btn">Kembali</a>
       <h1 class="text-center mb-4 text-light">Daftar Pesanan</h1>
 
-      {% if orders %}
-      <div class="order-summary" style=display:flex;flex-direction:column;gap:20px;align-items:center;>
-        {% for order in orders %}
-        <div class="order-card" style=margin-bottom:20px;>
-          <div style=width:100%;>
-            <img
-              src="{{ url_for('static', filename='img/' + order.product_image.split('/')[-1]) }}"
-              alt="{{ order.product_name }}" style="width: 100%;max-height:300px;object-fit: cover;"
-            />
-          </div>  
-          <div class="order-details" style=width:100%;>
-            <h4 class="card-title">{{ order.product_name }}</h4>
-            <p><strong>Nama:</strong> {{ order.nama }}</p>
-            <p><strong>Nomor HP:</strong> {{ order.nohp }}</p>
-            <p><strong>Tanggal Pemesanan:</strong> {{ order.order_date }}</p>
-            <p>
-              <strong>Estimasi Pengiriman:</strong> {{
-              order.estimated_delivery_date }}
-            </p>
-            <p>
-              <strong>Alamat Pengiriman:</strong> {{ order.detail_address }}
-            </p>
-            <p>
-              <strong>Lokasi Pengiriman:</strong>
-              <div id="map-{{order._id}}" style="height:200px;background:whitesmoke;"></div>
-              {% if order.map_points and order.map_points != '' %}
-              <script type="text/javascript">
-                // working on map
-                let mapOptions_{{order._id}} = {
-                    center:'{{order.map_points}}'.split(',').slice(2,4),
-                    zoom:10
-                }
-
-                let map_{{order._id}} = new L.map('map-{{order._id}}', mapOptions_{{order._id}});
-
-                let layer_{{order._id}} = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-                map_{{order._id}}.addLayer(layer_{{order._id}});
-                let marker_{{order._id}} = L.marker(mapOptions_{{order._id}}.center,{
-                  icon:L.icon({
-                      iconUrl: 'https://png.pngtree.com/png-clipart/20230221/original/pngtree-location-home-icon-pin-deal-clipart-png-image_8962267.png', // External image URL
-                      iconSize: [48, 48], // Size of the icon [width, height]
-                      iconAnchor: [24, 48], // Point of the icon that corresponds to the marker's location
-                      popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
-                  })
-                }).addTo(map_{{order._id}}).bindPopup('Lokasi Penerima');
-              </script>
-              {% endif %}
-            </p>
-            <p>
-              <strong>Estimasi Jarak Total:</strong> {{order.estimasi_jarak}}
-            </p>
-            <p>
-              <strong>Estimasi Waktu Pengiriman Total:</strong> {{order.estimasi_pengiriman}}
-            </p>
-            <p><strong>Biaya Pengiriman:</strong> {{ order.shipping_cost }}</p>
-            <p><strong>Berat Total:</strong> {{ order.total_weight }} kg</p>
-            <p>
-              <strong>Total Harga:</strong> Rp {{
-              '{:,.0f}'.format(order.total_price) }}
-            </p>
-            <p>
-              <strong>Harga Akhir:</strong> Rp {{
-              '{:,.0f}'.format(order.final_price) }}
-            </p>
-          </div>
-          <div style=width:100%;>
-            <div style=margin-bottom:10px;>
-              <strong>Lacak Kurir:</strong>
-            </div>
-            <div id="map-lacak-{{order._id}}" style="height:300px;margin-bottom: 20px;">
-                    
-            </div>
-            <div style=margin-bottom:10px;>
-              <strong>Estimasi Jarak:</strong><span id=estimasi_jarak_{{order._id}}>-</span>
-            </div>
-
-            <div style=margin-bottom:10px;>
-              <strong>Estimasi Waktu Pengiriman:</strong><span id=estimasi_waktu_{{order._id}}>-</span>
-            </div>
-            <script>
-              const map_points_{{order._id}} = '{{order.map_points}}'.split(',');
-              {% if not order.kurir_position %}
-              let start_position_{{order._id}} = map_points_{{order._id}}.slice(0,2);
-              {% else %}
-              let start_position_{{order._id}} = '{{order.kurir_position}}'.split(',');
-              {% endif %}
-              const map_lacak_{{order._id}} = new L.map('map-lacak-{{order._id}}',{
-                center:[1.1767912,124.796085],zoom:3
-              });
-              let layer_lacak_{{order._id}} = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-              map_lacak_{{order._id}}.addLayer(layer_lacak_{{order._id}});
-
-              let target_lacak_{{order._id}} = L.marker(map_points_{{order._id}}.slice(2,4),{
-                icon:L.icon({
-                    iconUrl: 'https://png.pngtree.com/png-clipart/20230221/original/pngtree-location-home-icon-pin-deal-clipart-png-image_8962267.png', // External image URL
-                    iconSize: [48, 48], // Size of the icon [width, height]
-                    iconAnchor: [24, 48], // Point of the icon that corresponds to the marker's location
-                    popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
-                })
-              }).addTo(map_lacak_{{order._id}}).bindPopup('Target Pengiriman').openPopup();
-
-              let kurir_lacak_{{order._id}} = L.marker(start_position_{{order._id}},{
-                icon:L.icon({
-                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/6951/6951721.png', // External image URL
-                    iconSize: [32, 32], // Size of the icon [width, height]
-                    iconAnchor: [16, 32], // Point of the icon that corresponds to the marker's location
-                    popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
-                })
-              }).addTo(map_lacak_{{order._id}}).bindPopup('Posisi Kurir').openPopup();
-              
-
-              const target_position_{{order._id}} = map_points_{{order._id}}.slice(2,4);
-
-              route = L.Routing.control({
-                createMarker: function() { return null; }, // Hides markers if needed
-                show: false,
-                waypoints: [
-                  L.latLng(start_position_{{order._id}}[0], start_position_{{order._id}}[1]),  // Start point
-                  L.latLng(target_position_{{order._id}}[0],target_position_{{order._id}}[1])     // End point
-                ],
-                routeWhileDragging: true   // Allows the route to be updated while dragging
-              }).addTo(map_lacak_{{order._id}});
-              route.on('routesfound', function(e) {
-                var routes = e.routes;
-                var summary = routes[0].summary;
-
-                // Distance is in meters, converting to kilometers
-                var distance = (summary.totalDistance / 1000).toFixed(2);
-
-                document.querySelector('#estimasi_jarak_{{order._id}}').innerText = ` ${distance} Km`;
-
-
-                // Time is in seconds, converting to minutes
-                var time = (summary.totalTime / 60).toFixed(2);
-
-                document.querySelector('#estimasi_waktu_{{order._id}}').innerText = ` ${Math.floor(distance / 60) + 2} Jam`;
-                document.querySelector('#map-lacak-{{order._id}}').querySelector('.leaflet-top.leaflet-right').remove();
-              });
-            </script>
-            <div style="display: flex;gap:10px;">
-              <button
-                class="btn-custom"
-                id="detail"
-                data-toggle="modal"
-                data-target="#modal-{{ loop.index }}"
-              >
-                Detail
-              </button>
-            </div>
-          </div>
-
-          <!-- Modal -->
-
-          <div
-            class="modal fade"
-            id="modal-{{ loop.index }}"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="modalLabel-{{ loop.index }}"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modalLabel-{{ loop.index }}">
-                    Status Pesanan
-                  </h5>
+      <div class="container text-center">
+        {% if orders %}
+        <div class="row">
+          {% for order in orders %}
+          <div class="col-sm-4">
+            <div class="order-card" style=margin-bottom:20px;>
+              <div style=width:100%;>
+                <img
+                  src="{{ url_for('static', filename='img/' + order.product_image.split('/')[-1]) }}"
+                  alt="{{ order.product_name }}" style="width: 100%;max-height:300px;object-fit: cover;"
+                />
+              </div>  
+              <div class="order-details" style=width:100%;>
+                <h4 class="card-title">{{ order.product_name }}</h4>
+                <p><strong>Nama:</strong> {{ order.nama }}</p>
+                <p><strong>Nomor HP:</strong> {{ order.nohp }}</p>
+                <p><strong>Tanggal Pemesanan:</strong> {{ order.order_date }}</p>
+                <p>
+                  <strong>Estimasi Pengiriman:</strong> {{
+                  order.estimated_delivery_date }}
+                </p>
+                <p>
+                  <strong>Alamat Pengiriman:</strong> {{ order.detail_address }}
+                </p>
+                <p>
+                  <strong>Lokasi Pengiriman:</strong>
+                  <div id="map-{{order._id}}" style="height:200px;background:whitesmoke;"></div>
+                  {% if order.map_points and order.map_points != '' %}
+                  <script type="text/javascript">
+                    // working on map
+                    let mapOptions_{{order._id}} = {
+                        center:'{{order.map_points}}'.split(',').slice(2,4),
+                        zoom:10
+                    }
+    
+                    let map_{{order._id}} = new L.map('map-{{order._id}}', mapOptions_{{order._id}});
+    
+                    let layer_{{order._id}} = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                    map_{{order._id}}.addLayer(layer_{{order._id}});
+                    let marker_{{order._id}} = L.marker(mapOptions_{{order._id}}.center,{
+                      icon:L.icon({
+                          iconUrl: 'https://png.pngtree.com/png-clipart/20230221/original/pngtree-location-home-icon-pin-deal-clipart-png-image_8962267.png', // External image URL
+                          iconSize: [48, 48], // Size of the icon [width, height]
+                          iconAnchor: [24, 48], // Point of the icon that corresponds to the marker's location
+                          popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+                      })
+                    }).addTo(map_{{order._id}}).bindPopup('Lokasi Penerima');
+                  </script>
+                  {% endif %}
+                </p>
+                <p>
+                  <strong>Estimasi Jarak Total:</strong> {{order.estimasi_jarak}}
+                </p>
+                <p>
+                  <strong>Estimasi Waktu Pengiriman Total:</strong> {{order.estimasi_pengiriman}}
+                </p>
+                <p><strong>Biaya Pengiriman:</strong> {{ order.shipping_cost }}</p>
+                <p><strong>Berat Total:</strong> {{ order.total_weight }} kg</p>
+                <p>
+                  <strong>Total Harga:</strong> Rp {{
+                  '{:,.0f}'.format(order.total_price) }}
+                </p>
+                <p>
+                  <strong>Harga Akhir:</strong> Rp {{
+                  '{:,.0f}'.format(order.final_price) }}
+                </p>
+              </div>
+              <div style=width:100%;>
+                <div style=margin-bottom:10px;>
+                  <strong>Lacak Kurir:</strong>
+                </div>
+                <div id="map-lacak-{{order._id}}" style="height:300px;margin-bottom: 20px;">
+                        
+                </div>
+                <div style=margin-bottom:10px;>
+                  <strong>Estimasi Jarak:</strong><span id=estimasi_jarak_{{order._id}}>-</span>
+                </div>
+    
+                <div style=margin-bottom:10px;>
+                  <strong>Estimasi Waktu Pengiriman:</strong><span id=estimasi_waktu_{{order._id}}>-</span>
+                </div>
+                <script>
+                  const map_points_{{order._id}} = '{{order.map_points}}'.split(',');
+                  {% if not order.kurir_position %}
+                  let start_position_{{order._id}} = map_points_{{order._id}}.slice(0,2);
+                  {% else %}
+                  let start_position_{{order._id}} = '{{order.kurir_position}}'.split(',');
+                  {% endif %}
+                  const map_lacak_{{order._id}} = new L.map('map-lacak-{{order._id}}',{
+                    center:[1.1767912,124.796085],zoom:3
+                  });
+                  let layer_lacak_{{order._id}} = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                  map_lacak_{{order._id}}.addLayer(layer_lacak_{{order._id}});
+    
+                  let target_lacak_{{order._id}} = L.marker(map_points_{{order._id}}.slice(2,4),{
+                    icon:L.icon({
+                        iconUrl: 'https://png.pngtree.com/png-clipart/20230221/original/pngtree-location-home-icon-pin-deal-clipart-png-image_8962267.png', // External image URL
+                        iconSize: [48, 48], // Size of the icon [width, height]
+                        iconAnchor: [24, 48], // Point of the icon that corresponds to the marker's location
+                        popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+                    })
+                  }).addTo(map_lacak_{{order._id}}).bindPopup('Target Pengiriman').openPopup();
+    
+                  let kurir_lacak_{{order._id}} = L.marker(start_position_{{order._id}},{
+                    icon:L.icon({
+                        iconUrl: 'https://cdn-icons-png.flaticon.com/512/6951/6951721.png', // External image URL
+                        iconSize: [32, 32], // Size of the icon [width, height]
+                        iconAnchor: [16, 32], // Point of the icon that corresponds to the marker's location
+                        popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+                    })
+                  }).addTo(map_lacak_{{order._id}}).bindPopup('Posisi Kurir').openPopup();
+                  
+    
+                  const target_position_{{order._id}} = map_points_{{order._id}}.slice(2,4);
+    
+                  route = L.Routing.control({
+                    createMarker: function() { return null; }, // Hides markers if needed
+                    show: false,
+                    waypoints: [
+                      L.latLng(start_position_{{order._id}}[0], start_position_{{order._id}}[1]),  // Start point
+                      L.latLng(target_position_{{order._id}}[0],target_position_{{order._id}}[1])     // End point
+                    ],
+                    routeWhileDragging: true   // Allows the route to be updated while dragging
+                  }).addTo(map_lacak_{{order._id}});
+                  route.on('routesfound', function(e) {
+                    var routes = e.routes;
+                    var summary = routes[0].summary;
+    
+                    // Distance is in meters, converting to kilometers
+                    var distance = (summary.totalDistance / 1000).toFixed(2);
+    
+                    document.querySelector('#estimasi_jarak_{{order._id}}').innerText = ` ${distance} Km`;
+    
+    
+                    // Time is in seconds, converting to minutes
+                    var time = (summary.totalTime / 60).toFixed(2);
+    
+                    document.querySelector('#estimasi_waktu_{{order._id}}').innerText = ` ${Math.floor(distance / 60) + 2} Jam`;
+                    document.querySelector('#map-lacak-{{order._id}}').querySelector('.leaflet-top.leaflet-right').remove();
+                  });
+                </script>
+                <!-- Conditional message and button -->
+                {% if order.status == 'Pesanan Diterima' %}
+                <div style="margin-top: 10px; color: red;">
+                  <strong>Pending!</strong> Segera upload bukti pembayaran!
                   <button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
+                    class="btn btn-warning"
+                    data-toggle="modal"
+                    data-target="#upload-modal-{{ loop.index }}"
+                    style="margin-left: 10px;"
                   >
-                    <span aria-hidden="true">&times;</span>
+                    Upload Bukti
                   </button>
                 </div>
-                <div class="modal-body">
-                  <!-- Progress Tracker -->
-                  <div class="tracking-status">
-                    <!-- Step 1: Pesanan Diterima -->
-                    <div
-                      class="step {% if order.status in ['Pesanan Diterima', 'Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                    >
-                      <div class="icon">
-                        <i class="fas fa-check-circle"></i>
-                      </div>
-                      <p>Pesanan Diterima</p>
-                    </div>
+                {% endif %}
 
-                    <!-- Step 2: Bukti Pembayaran Diunggah -->
-                    <div
-                      class="step {% if order.status in ['Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                    >
-                      <div class="icon">
-                        <i class="fas fa-file-upload"></i>
-                      </div>
-                      <p>Bukti Pembayaran Diunggah</p>
+                {% if order.status != 'Pesanan Diterima' %}
+                <div style="display: flex;gap:10px;">
+                  <button
+                    class="btn-custom"
+                    id="detail"
+                    data-toggle="modal"
+                    data-target="#modal-{{ loop.index }}"
+                  >
+                    Detail
+                  </button>
+                </div>
+                {% endif %}
+              </div>
+    
+              <!-- Modal -->
+              <div
+                class="modal fade"
+                id="modal-{{ loop.index }}"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="modalLabel-{{ loop.index }}"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modalLabel-{{ loop.index }}">
+                        Status Pesanan
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
                     </div>
-
-                    <!-- Step 3: Sedang Dikemas -->
-                    <div
-                      class="step {% if order.status in ['Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                    >
-                      <div class="icon">
-                        <i class="fas fa-box"></i>
+                    <div class="modal-body">
+                      <!-- Progress Tracker -->
+                      <div class="tracking-status">
+                        <!-- Step 1: Pesanan Diterima -->
+                        <div
+                          class="step {% if order.status in ['Pesanan Diterima', 'Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                        >
+                          <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                          </div>
+                          <p>Pesanan Diterima</p>
+                        </div>
+    
+                        <!-- Step 2: Bukti Pembayaran Diunggah -->
+                        <div
+                          class="step {% if order.status in ['Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                        >
+                          <div class="icon">
+                            <i class="fas fa-file-upload"></i>
+                          </div>
+                          <p>Bukti Pembayaran Diunggah</p>
+                        </div>
+    
+                        <!-- Step 3: Sedang Dikemas -->
+                        <div
+                          class="step {% if order.status in ['Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                        >
+                          <div class="icon">
+                            <i class="fas fa-box"></i>
+                          </div>
+                          <p>Sedang Dikemas</p>
+                        </div>
+    
+                        <!-- Step 4: Sedang Dalam Perjalanan -->
+                        <div
+                          class="step {% if order.status in ['Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
+                        >
+                          <div class="icon">
+                            <i class="fas fa-shipping-fast"></i>
+                          </div>
+                          <p>Sedang Dalam Perjalanan</p>
+                        </div>
+    
+                        <!-- Step 5: Pesanan Selesai -->
+                        <div
+                          class="step {% if order.status == 'Pesanan Selesai' %}completed{% endif %}"
+                        >
+                          <div class="icon">
+                            <i class="fas fa-box-open"></i>
+                          </div>
+                          <p>Pesanan Selesai</p>
+                        </div>
                       </div>
-                      <p>Sedang Dikemas</p>
                     </div>
-
-                    <!-- Step 4: Sedang Dalam Perjalanan -->
-                    <div
-                      class="step {% if order.status in ['Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                    >
-                      <div class="icon">
-                        <i class="fas fa-shipping-fast"></i>
-                      </div>
-                      <p>Sedang Dalam Perjalanan</p>
-                    </div>
-
-                    <!-- Step 5: Pesanan Selesai -->
-                    <div
-                      class="step {% if order.status == 'Pesanan Selesai' %}completed{% endif %}"
-                    >
-                      <div class="icon">
-                        <i class="fas fa-box-open"></i>
-                      </div>
-                      <p>Pesanan Selesai</p>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                      >
+                        Tutup
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
-                    Tutup
-                  </button>
-                </div>
               </div>
-            </div>
-          </div>
-          <!-- Modal -->
 
-          <div
-            class="modal fade"
-            id="modal-{{ loop.index }}-lacak"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="modalLabel-{{ loop.index }}"
-            aria-hidden="true"
-          >
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modalLabel-{{ loop.index }}">
-                    Lacak Pesanan
-                  </h5>
-                  <button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body" style=padding:0;>
-                  <!-- Progress Tracker -->
-                  
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
-                    Tutup
-                  </button>
+              <!-- Modal -->
+              <div
+                class="modal fade"
+                id="modal-{{ loop.index }}-lacak"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="modalLabel-{{ loop.index }}"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modalLabel-{{ loop.index }}">
+                        Lacak Pesanan
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body" style=padding:0;>
+                      <!-- Progress Tracker -->
+                      
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                      >
+                        Tutup
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <!-- Upload Bukti Modal -->
+              <div class="modal fade" id="upload-modal-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel-{{ loop.index }}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="uploadModalLabel-{{ loop.index }}">Upload Bukti Pembayaran</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="payment-container">
+
+                        <p class="total-payment">
+                          Total Pembayaran: <span>{{ "Rp {:,.0f}".format(order.final_price).replace(",", ".") }}</span>
+                        </p>
+                        
+
+                        <div class="bank-info">
+                          <img
+                            src="{{ url_for('static', filename='img/bri.png') }}"
+                            alt="BRI Logo"
+                          />
+                          <div class="bank-details">
+                            <p>Bank BRI</p>
+                            <p>No. Rekening: 512201022358539</p>
+                            <p>A.N Rangga Jufry Serang</p>
+                          </div>
+                        </div>
+
+                        <div class="bank-info">
+                          <img
+                            src="{{ url_for('static', filename='img/dana.png') }}"
+                            alt="DANA Logo"
+                          />
+                          <div class="bank-details">
+                            <p>DANA</p>
+                            <p>Nomor: 0897-8068-620</p>
+                            <p>A.N Rangga Jufri Serang</p>
+                          </div>
+                        </div>
+
+                        <div class="bank-info">
+                          <img
+                            src="{{ url_for('static', filename='img/ovo.png') }}"
+                            alt="OVO Logo"
+                          />
+                          <div class="bank-details">
+                            <p>OVO</p>
+                            <p>Nomor: 0897-8068-6200</p>
+                            <p>A.N Rangga Jufri Serang</p>
+                          </div>
+                        </div>
+                        
+                         
+                        
+                        <form action="{{ url_for('upload_bukti_baru') }}" method="POST" enctype="multipart/form-data">
+                          <input type="hidden" name="order_id" value="{{ order._id }}">
+                          <input type="file" name="payment_proof">
+                          <button type="submit" class="btn btn-primary btn-block">Upload Bukti Pembayaran</button>
+                      </form>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
+          {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <p class="text-center no-orders">Tidak ada pesanan yang ditemukan.</p>
+        {% endif %}
       </div>
-      {% else %}
-      <p class="text-center no-orders">Tidak ada pesanan yang ditemukan.</p>
-      {% endif %}
     </div>
+
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
