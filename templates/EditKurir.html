@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"
+    />
+    <style>
+      body,
+      html {
+        height: 110%;
+        margin: 0;
+      }
+      .container-fluid {
+        display: flex;
+        height: 100%;
+      }
+      .left-side {
+        flex: 1;
+        background-image: url("http://127.0.0.1:5000/static/img/bglogin.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .right-side {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+      }
+      .signup-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        margin: 20px 0;
+      }
+      .btn-signup {
+        background-color: #46a9d3;
+        color: #fff;
+        border: none;
+      }
+      .btn-signup:hover {
+        background-color: #3a8bcf;
+      }
+      .login-link {
+        color: #46a9d3;
+      }
+      .login-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <!-- Left Side: Background Image -->
+      <div class="left-side"></div>
+
+      <!-- Right Side: Sign Up Card -->
+      <div class="right-side">
+        <div class="signup-card">
+          <h2 class="text-center mb-4">Edit Akun Kurir</h2>
+          <form>
+            <div class="mb-3">
+              <label for="fullname" class="form-label">Nama Lengkap</label>
+              <input
+                type="text"
+                id="nama"
+                class="form-control"
+                placeholder="Masukkan nama lengkap Kurir"
+                required
+                value="{{ data.nama }}"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                id="username"
+                class="form-control"
+                placeholder="Masukkan username"
+                required
+                value="{{ data.username }}"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">No HP</label>
+              <input
+                type="tel"
+                id="nomorhp"
+                class="form-control"
+                placeholder="Masukkan no HP"
+                required
+                value="{{ data.nohp }}"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                id="email"
+                class="form-control"
+                placeholder="Masukkan email"
+                required
+                value="{{ data.email }}"
+              />
+            </div>
+            <div class="mb-3 form-icon">
+              <label for="password" class="form-label">Kata Sandi Baru</label>
+              <input
+                type="password"
+                id="password"
+                class="form-control"
+                placeholder="Masukkan kata sandi"
+                required
+              />
+              <i id="togglePassword"></i>
+            </div>
+            <div class="mb-3 form-icon">
+              <label for="password2" class="form-label"
+                >Konfirmasi Kata Sandi</label
+              >
+              <input
+                type="password"
+                id="password2"
+                class="form-control"
+                placeholder="Konfirmasi kata sandi"
+                required
+              />
+              <i id="password2"></i>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-signup w-100 mb-3"
+              onclick="register(event)"
+            >
+              Simpan
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+roLPxQhYCpym79fj5hbwgFOk5d2g"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      function register(event) {
+        event.preventDefault();
+        let inputPassword = $("#password");
+        let inputPassword2 = $("#password2");
+
+        let username = $("#username").val();
+        let password = inputPassword.val();
+        let password2 = inputPassword2.val();
+        let nama = $("#nama").val();
+        let email = $("#email").val();
+        let nohp = $("#nomorhp").val();
+
+        if (
+          nama === "" ||
+          email === "" ||
+          nohp === ""
+        ) {
+          alert("Inputanmu masih kurang, silahkan periksa kembali!");
+          return;
+        } else if (password != password2) {
+          alert("Password anda harus sama!");
+          return;
+        }
+
+        $.ajax({
+          type: "POST",
+          url: "/kurir/edit/save/{{data._id}}",
+          data: {
+            username_give: username,
+            password_give: password,
+            nama_give: nama,
+            email_give: email,
+            nomorhp_give: nohp,
+          },
+          success: function (response) {
+            if (response.result === "success") {
+              alert("Kurir berhasil ditambahkan!");
+              window.location.replace("/admin");
+            } else {
+              alert("Terjadi kesalahan, silahkan coba lagi.");
+            }
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Admin</title>
+    <title>Login Kurir</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -94,7 +94,7 @@
       <!-- Right Side: Login Card -->
       <div class="right-side">
         <div class="login-card">
-          <h2 class="text-center mb-4">Login Admin</h2>
+          <h2 class="text-center mb-4">Login Kurir</h2>
           <form id="loginForm" onsubmit="sign_admin(); return false;">
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
@@ -126,8 +126,8 @@
               <a href="/login" class="register-link">Disini</a>
             </p>
             <p class="text-center">
-              Anda adalah Kurir?
-              <a href="/login-kurir" class="register-link">Login disini</a>
+              Anda adalah admin?
+              <a href="/loginadmin" class="register-link">Login disini</a>
             </p>
           </form>
         </div>
@@ -151,7 +151,7 @@
 
         $.ajax({
           type: "POST",
-          url: "/admin/login",
+          url: "/kurir/login",
           data: {
             email_give: email,
             password_give: password,
@@ -161,7 +161,7 @@
               // Set the token in the cookie
               $.cookie("admin_token", response["token"], { path: "/" });
               // Redirect to the admin page
-              window.location.replace("/admin");
+              window.location.replace("/kurir");
             } else {
               alert(response["msg"]);
             }

@@ -33,6 +33,7 @@ cart_collection = db['cart']  # Collection for storing cart data
 messages_collection = db['messages']  # Collection for storing messages
 orders_collection = db['orders']
 users_collection = db['users']
+kurir_collection = db['kurir']
 
 TOKEN_KEY = 'mytoken'
 SECRET_KEY = os.environ.get('SECRET_KEY', 'SAYA')
@@ -320,6 +321,7 @@ def upload_bukti():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for('login'))
 
+
 @app.route('/upload_bukti_baru', methods=['POST'])
 def upload_bukti_baru():
     if request.method == 'POST':
@@ -367,8 +369,6 @@ def upload_bukti_baru():
             return redirect(url_for('pay'))
 
     return jsonify({'error': 'Invalid request method'}), 400
-
-
 
 # Route untuk membuat pesanan
 @app.route('/submit_order', methods=['POST'])
@@ -469,7 +469,7 @@ def pesanan():
 
         if user:
             # Ambil pesanan hanya milik pengguna yang sedang login berdasarkan nama pengguna
-            orders = list(db.orders.find({'nama': user['nama']}).sort('order_date', -1))
+            orders = list(db.orders.find({'nama': user['nama']}))
             # print(orders)
             # Konversi harga menjadi float jika diperlukan
             for order in orders:
@@ -489,12 +489,199 @@ def pesanan():
     
 
 
+@app.route('/login-kurir')
+def loginkurir():
+    return render_template('LoginKurir.html')
 
 
+@app.route("/kurir/login", methods=["POST"])
+def kurir_login():
+    email_receive = request.form["email_give"]
+    password_receive = request.form["password_give"]
+    pw_hash = hashlib.sha256(password_receive.encode("utf-8")).hexdigest()
+    result = kurir_collection.find_one({"email": email_receive, "password": pw_hash})
+    if result:
+        payload = {"id": email_receive, "exp": datetime.utcnow() + timedelta(seconds=60 * 60 * 24)}
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+        response = make_response(jsonify({"result": "success"}))
+        response.set_cookie(ADMIN_KEY, token, httponly=True)
+        return response
+    else:
+        return jsonify({"result": "fail", "msg": "Username atau password kamu tidak ditemukan!"})
 
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
+@app.route("/kurir/tambah", methods=['GET'])
+def tambah_kurir():
+    return render_template('TambahKurir.html')
 
+@app.route("/kurir/tambah/save", methods=["POST"])
+def tambah_kurir_save():
+    username_receive = request.form.get('username_give')
+    password_receive = request.form.get('password_give')
+    nama_receive = request.form.get('nama_give')
+    email_receive = request.form.get('email_give')
+    nohp_receive = request.form.get('nomorhp_give')
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    doc = {
+        "nama": nama_receive,
+        "username": username_receive,
+        "password": password_hash,
+        "email": email_receive,
+        "nohp": nohp_receive
+    }
+    db.kurir.insert_one(doc)
+    return jsonify({'result': 'success'})  
 
+@app.route('/kurir/hapus/<string:id>',methods=["GET"])
+def hapus_kurir(id):
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        
+        # Hapus pengguna berdasarkan ID
+        result = kurir_collection.delete_one({"_id": ObjectId(id)})
+        
+        if result.deleted_count > 0:
+            flash("Kurir berhasil dihapus!", "success")
+        else:
+            flash("Kurir tidak ditemukan!", "danger")
+        
+        return redirect(url_for('admin'))  # Update 'admin' to the correct endpoint if needed
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
+
+@app.route('/kurir/edit/<string:id>',methods=["GET"])
+def edit_kurir(id):
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        # Hapus pengguna berdasarkan ID
+        result = kurir_collection.find_one({"_id": ObjectId(id)})
+        return render_template('EditKurir.html',data=result)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
+
+@app.route('/kurir/set/<string:id_order>/<string:id_kurir>',methods=["GET"])
+def set_kurir(id_order,id_kurir):
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        orders_collection.update_one(
+            {"_id":ObjectId(id_order)},
+            {"$set": {"id_kurir": id_kurir}}
+        )
+        return jsonify({'valid': True})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
+
+@app.route('/kurir/set-status-pesanan/<string:id_order>/<string:status_pesanan>',methods=["GET"])
+def set_kurir_status_pesanan(id_order,status_pesanan):
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        orders_collection.update_one(
+            {"_id":ObjectId(id_order)},
+            {"$set": {"status": status_pesanan}}
+        )
+        return jsonify({'valid': True})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
+
+@app.route("/kurir/edit/save/<string:id>", methods=["POST"])
+def edit_kurir_save(id):
+    username_receive = request.form.get('username_give')
+    password_receive = request.form.get('password_give')
+    nama_receive = request.form.get('nama_give')
+    email_receive = request.form.get('email_give')
+    nohp_receive = request.form.get('nomorhp_give')
+    doc = {
+        "nama": nama_receive,
+        "username": username_receive,
+        "email": email_receive,
+        "nohp": nohp_receive
+    }
+
+    if(password_receive!=""):
+        password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+        doc['password'] = password_hash
+
+    kurir_collection.update_one(
+        {"_id":ObjectId(id)},
+        {"$set":doc}
+    )
+    return jsonify({'result': 'success'})
+
+@app.route("/kurir")
+def kurir():
+    token_receive = request.cookies.get(ADMIN_KEY)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        
+        # Ambil data produk
+        products = list(products_collection.find({}))
+        for product in products:
+            product['_id'] = str(product['_id'])
+            # Menyusun URL gambar produk dari folder static/img
+            product['image_url'] = url_for('static', filename='img/' + product.get('image_url', 'default.png'))
+        
+        # Ambil informasi admin dari email yang diambil dari token
+        name_info = admin_collection.find_one({"email": payload["id"]})
+        
+        # Ambil data pesan dari collection
+        messages = list(messages_collection.find({}))
+        for message in messages:
+            message['_id'] = str(message['_id'])
+        
+        # Ambil data pesanan dari collection
+        kurir = kurir_collection.find_one({'email':payload['id']})
+        orders = list(orders_collection.find({"id_kurir": str(kurir["_id"])}))
+        for order in orders:
+            order['_id'] = str(order['_id'])
+            order['order_date'] = order.get('order_date', 'N/A')
+            order['estimated_delivery_date'] = order.get('estimated_delivery_date', 'N/A')
+            order['shipping_location'] = order.get('shipping_location', 'N/A')
+            order['shipping_cost'] = order.get('shipping_cost', 'N/A')
+            order['detail_address'] = order.get('detail_address', 'N/A')
+            order['total_weight'] = order.get('total_weight', 'N/A')
+            
+            # Konversi total_price dan final_price ke float sebelum diformat
+            try:
+                order['total_price'] = float(order.get('total_price', 0))
+                order['final_price'] = float(order.get('final_price', 0))
+            except ValueError:
+                order['total_price'] = 0
+                order['final_price'] = 0
+            
+            order['product_name'] = order.get('product_name', 'N/A')
+            
+            # Menyusun URL gambar produk dan langsung menggunakan payment_proof dari database
+            order['product_image'] = url_for('static', filename='img/' + order.get('product_image', 'default.png'))
+            # Jangan tambahkan path static/img lagi ke payment_proof karena sudah lengkap
+            order['payment_proof'] = order.get('payment_proof', '/static/img/default.png')
+        
+        # Ambil data pengguna dari collection
+        users = list(users_collection.find({}))
+        for i, user in enumerate(users):
+            user['_id'] = str(user['_id'])
+            user['index'] = i + 1  # Tambahkan index untuk nomor urut
+
+        # Ambil data kurir
+        data_kurir = list(kurir_collection.find({}))
+        
+        # Render template Admin.html dengan data yang sudah disiapkan
+        return render_template(
+            'Kurir.html',
+            name_info=name_info,
+            products=products,
+            messages=messages,
+            orders=orders,
+            users=users,
+            data_kurir=data_kurir
+        )
+    
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('loginadmin'))
 
 
 
@@ -576,6 +763,9 @@ def admin():
         for i, user in enumerate(users):
             user['_id'] = str(user['_id'])
             user['index'] = i + 1  # Tambahkan index untuk nomor urut
+
+        # Ambil data kurir
+        data_kurir = list(kurir_collection.find({}))
         
         # Render template Admin.html dengan data yang sudah disiapkan
         return render_template(
@@ -584,7 +774,8 @@ def admin():
             products=products,
             messages=messages,
             orders=orders,
-            users=users
+            users=users,
+            data_kurir=data_kurir
         )
     
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -662,24 +853,25 @@ def product_details(product_id):
 
 @app.route('/update_order_status', methods=['POST'])
 def update_order_status():
-    token_receive = request.cookies.get(TOKEN_KEY)
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+    # token_receive = request.cookies.get(TOKEN_KEY)
+    # try:
+    #     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
 
-        order_id = request.form.get('order_id')
-        new_status = request.form.get('status')
+        
 
-        # Update order status in the database
-        orders_collection.update_one(
-            {"_id": ObjectId(order_id)},
-            {"$set": {"status": new_status}}
-        )
+    # except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+    #     return redirect(url_for('login'))
+    order_id = request.form.get('order_id')
+    new_status = request.form.get('status')
 
-        flash('Status pesanan berhasil diperbarui.')
-        return redirect(url_for('admin'))
+    # Update order status in the database
+    orders_collection.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {"status": new_status}}
+    )
 
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for('login'))
+    flash('Status pesanan berhasil diperbarui.')
+    return redirect(url_for('admin'))
 
 @app.route('/akun')
 def akun():
@@ -926,8 +1118,6 @@ def submit_message():
     
     # Redirect kembali ke halaman utama
     return redirect(url_for('home'))
-
-
 
 
 

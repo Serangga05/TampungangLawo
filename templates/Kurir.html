@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Tampunganglawo</title>
+    <title>Kurir Tampunganglawo</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -493,9 +493,21 @@
         color: #ffffff; /* Warna putih untuk ikon saat dihover */
       }
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <link rel="stylesheet" href="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.css"
+    />
     <script src="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.js"></script>
     <!-- Include Leaflet Routing Machine library -->
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
@@ -638,22 +650,7 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" href="#produk">Produk</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link active" href="#pesanan">Pesanan</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="#distribusi">Distribusi</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="#kurir">Kurir</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="#pengguna">Pengguna</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="#kontak">Pesan</a>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -680,325 +677,6 @@
       </div>
     </nav>
 
-    <!-- Bagian Produk -->
-    <div id="produk" class="container mt-5">
-      <div
-        class="d-flex justify-content-between align-items-center mb-4 flex-wrap"
-      >
-        <h1 class="mb-2 mb-md-0">Produk</h1>
-        <button
-          class="btn btn-custom"
-          data-bs-toggle="modal"
-          data-bs-target="#tambahProdukModal"
-        >
-          Tambah Produk
-        </button>
-      </div>
-      <div class="row" id="productList">
-        {% for product in products %}
-        <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
-          <div class="card h-100 product-card">
-            <img
-              src="{{ url_for('static', filename='img/' + product['image']) }}"
-              alt="{{ product['name'] }}"
-              class="img-fluid mb-2"
-              style="max-height: 200px; object-fit: cover"
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ product['name'] }}</h5>
-              <p class="card-text">Harga: Rp{{ product['price'] }}/kg</p>
-              <p class="card-text">Stok: {{ product['stock'] }} kg</p>
-              <p class="card-text">{{ product['description'] }}</p>
-              <!-- Container untuk tombol -->
-              <div class="button-container">
-                <a
-                  href="#"
-                  onclick="openEditProductModal('{{ product['_id'] }}')"
-                  class="btn btn-warning btn-sm"
-                  >Edit</a
-                >
-                <a
-                  href="#"
-                  onclick="openDeleteProductModal('{{ product['_id'] }}')"
-                  class="btn btn-danger btn-sm"
-                  >Hapus</a
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Modal Tambah Produk -->
-    <div
-      class="modal fade"
-      id="tambahProdukModal"
-      tabindex="-1"
-      aria-labelledby="tambahProdukModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="tambahProdukModalLabel">
-              Tambah Produk Baru
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="tambahProdukForm" enctype="multipart/form-data">
-              <div class="mb-3">
-                <label for="productImage" class="form-label"
-                  >Gambar Produk</label
-                >
-                <input
-                  type="file"
-                  class="form-control"
-                  id="productImage"
-                  name="productImage"
-                  accept="image/*"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="productName" class="form-label">Nama Produk</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="productName"
-                  name="productName"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="productPrice" class="form-label">Harga</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="productPrice"
-                  name="productPrice"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="productStock" class="form-label">Stok</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="productStock"
-                  name="productStock"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="productDescription" class="form-label"
-                  >Deskripsi Produk</label
-                >
-                <textarea
-                  class="form-control"
-                  id="productDescription"
-                  name="productDescription"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-              <button type="submit" class="btn btn-custom">
-                Tambah Produk
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Edit Produk -->
-    <div
-      class="modal fade"
-      id="editProductModal"
-      tabindex="-1"
-      aria-labelledby="editProductModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editProductModalLabel">Edit Produk</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form id="editProductForm" enctype="multipart/form-data">
-              <input type="hidden" id="editProductId" name="productId" />
-              <div class="mb-3">
-                <label for="editProductImage" class="form-label"
-                  >Gambar Produk</label
-                >
-                <input
-                  type="file"
-                  class="form-control"
-                  id="editProductImage"
-                  name="productImage"
-                  accept="image/*"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="editProductName" class="form-label"
-                  >Nama Produk</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="editProductName"
-                  name="productName"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="editProductPrice" class="form-label">Harga</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="editProductPrice"
-                  name="productPrice"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="editProductStock" class="form-label">Stok</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="editProductStock"
-                  name="productStock"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="editProductDescription" class="form-label"
-                  >Deskripsi Produk</label
-                >
-                <textarea
-                  class="form-control"
-                  id="editProductDescription"
-                  name="productDescription"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
-              <button type="submit" class="btn btn-custom">
-                Simpan Perubahan
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Hapus Produk -->
-    <div
-      class="modal fade"
-      id="hapusProdukModal"
-      tabindex="-1"
-      aria-labelledby="hapusProdukModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="hapusProdukModalLabel">Hapus Produk</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p>Apakah Anda yakin ingin menghapus produk ini?</p>
-            <form id="hapusProdukForm">
-              <input type="hidden" id="hapusProductId" name="productId" />
-              <button type="submit" class="btn btn-danger">Hapus</button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Batal
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Daftar Pesanan -->
-    <div class="container mt-5">
-      <h1 id="pesanan">Daftar Pesanan</h1>
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead class="thead-color">
-            <tr>
-              <th>Tanggal Pemesanan</th>
-              <th>Info Pengguna</th>
-              <th>Alamat</th>
-              <th>Jenis Ikan</th>
-              <th>Total</th>
-              <th>Status Pesanan</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for order in orders %}
-            <tr>
-              <td>{{ order.order_date }}</td>
-              <td>
-                {{ order.nama }} <br />
-                {{ order.nohp }}
-              </td>
-              <td>
-                {{ order.shipping_location }} <br />
-                {{ order.detail_address }}
-              </td>
-              <td>
-                {{ order.product_name }} <br />
-                {{ order.total_weight }}kg
-              </td>
-              <td>Rp {{ '{:,.0f}'.format(order.final_price) }}</td>
-              <td>{{ order.status }}</td>
-              <td>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-danger rounded-5"
-                  data-bs-toggle="modal"
-                  data-bs-target="#orderModal"
-                  data-order-id="{{ order._id }}"
-                  data-order-date="{{ order.order_date }}"
-                  data-nama="{{ order.nama }}"
-                  data-product-name="{{ order.product_name }}"
-                  data-final-price="{{ order.final_price }}"
-                  data-status="{{ order.status }}"
-                  data-payment-proof="{{ order.payment_proof }}"
-                >
-                  Detail
-                </button>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- Daftar Pesanan -->
     <div class="container mt-5">
       <h1 id="distribusi">Pesanan Diantar</h1>
@@ -1012,13 +690,12 @@
               <th>Jenis Ikan</th>
               <th>Total</th>
               <th>Status Pesanan</th>
-              <th>Kurir</th>
               <th>Posisi Kurir</th>
             </tr>
           </thead>
           <tbody>
-            {% for order in orders %}
-            {% if order.status == 'Sedang Dalam Perjalanan' %}
+            {% for order in orders %} {% if order.status == 'Sedang Dalam
+            Perjalanan' %}
             <tr>
               <td>{{ order.order_date }}</td>
               <td>
@@ -1034,244 +711,33 @@
                 {{ order.total_weight }}kg
               </td>
               <td>Rp {{ '{:,.0f}'.format(order.final_price) }}</td>
-              <td>{{ order.status }}</td>
               <td>
-                <select class=form-control onchange="setKurirId(this,'{{ order._id }}')">
-                  <option>Pilih Kurir</option>
-                  {% for kurir in data_kurir %}
-                  <option value="{{ kurir._id }}"
-                  {% if order.id_kurir and (order.id_kurir|string) == (kurir._id|string) %}
-                    selected
-                  {% endif %}
-                  >
-                  {{ kurir.nama }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-              {% if order.id_kurir %}
-              <td>
-                <div style="display:flex;gap:5px;">
-                  <a href="/admin/update_kurir_position/{{order._id}}"
-                  class="btn btn-sm btn-secondary rounded-5" onclick="openDetailKurirPosition('{{order._id}}')">Detail</a>
-                </div>
-              </td>
-              {% else %}
-              <td>
-                -
-              </td>
-              {% endif %}
-            </tr>
-            {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="container mt-5">
-      <div style=display:flex;justify-content:space-between;align-items:center;>
-        <h1 id="kurir">Kurir</h1>
-        <a class="btn btn-primary" href="/kurir/tambah">Tambah Kurir</a>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead class="thead-color">
-            <tr>
-              <th>Nama</th>
-              <th>Hp</th>
-              <th>Email</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for kurir in data_kurir %}
-            <tr>
-              <td>{{ kurir.nama }}</td>
-              <td>
-                {{ kurir.nohp }}
-              </td>
-              <td>
-                {{ kurir.email }}
-              </td>
-              <td>
-                <div style="display:flex;gap:5px;">
-                  <a
-                  class="btn btn-sm btn-primary rounded-5" href="/kurir/edit/{{ kurir._id }}">Edit</a>
-                  <a href="/kurir/hapus/{{ kurir._id }}"
-                  class="btn btn-sm btn-secondary rounded-5">Hapus</a>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Modal for Order Details and Status Update -->
-    <div
-      class="modal fade"
-      id="orderModal"
-      tabindex="-1"
-      aria-labelledby="orderModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="orderModalLabel">Detail Pesanan</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <form
-              id="orderForm"
-              method="POST"
-              action="{{ url_for('update_order_status') }}"
-            >
-              <input type="hidden" name="order_id" id="order_id" />
-              <div class="mb-3">
-                <label for="order_date" class="form-label"
-                  >Tanggal Pemesanan</label
+                <select
+                  class="form-control"
+                  onchange="setStatusPesanan(this,'{{order._id}}')"
                 >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="order_date"
-                  readonly
-                />
-              </div>
-              <div class="mb-3">
-                <label for="nama" class="form-label">Nama User</label>
-                <input type="text" class="form-control" id="nama" readonly />
-              </div>
-              <div class="mb-3">
-                <label for="product_name" class="form-label">Jenis Ikan</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="product_name"
-                  readonly
-                />
-              </div>
-              <div class="mb-3">
-                <label for="final_price" class="form-label">Total</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="final_price"
-                  readonly
-                />
-              </div>
-              <div class="mb-3">
-                <label for="status" class="form-label">Status Pesanan</label>
-                <select class="form-select" id="status" name="status">
-                  <option value="Sedang Dikemas">Sedang Dikemas</option>
-                  <option value="Sedang Dalam Perjalanan">
+                  <option value="Sedang Dalam Perjalanan" selected>
                     Sedang Dalam Perjalanan
                   </option>
+                  <option value="Pesanan Selesai">Pesanan Selesai</option>
                 </select>
-              </div>
-              <div class="mb-3">
-                <label for="payment_proof" class="form-label"
-                  >Bukti Pembayaran</label
-                >
-                <div id="payment_proof_container">
-                  <img
-                    id="payment-proof-img"
-                    src=""
-                    alt="Bukti Pembayaran"
-                    class="img-fluid"
-                  />
-                </div>
-              </div>
-              <button type="submit" class="btn btn-primary">
-                Update Status
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Daftar Pengguna -->
-    <main class="container mt-5">
-      <h1 id="pengguna">Daftar Pengguna</h1>
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="thead-color">
-            <tr>
-              <th>No</th>
-              <th>Nama</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Nomor Telepon</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="tbody-color">
-            {% for user in users %}
-            <tr>
-              <td>{{ user.index }}</td>
-              <td>{{ user.nama }}</td>
-              <td>{{ user.username }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.nohp }}</td>
+              </td>
               <td>
-                <form
-                  action="{{ url_for('delete_user', user_id=user._id) }}"
-                  method="POST"
-                  style="display: inline"
-                >
-                  <button
-                    type="submit"
-                    class="btn btn-danger btn-sm"
-                    onclick="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');"
+                <div style="display: flex; gap: 5px">
+                  <div
+                    class="btn btn-sm btn-primary rounded-5"
+                    onclick="updateKurirPosition('{{order._id}}')"
                   >
-                    Hapus
-                  </button>
-                </form>
+                    Update
+                  </div>
+                </div>
               </td>
             </tr>
-            {% endfor %}
+            {% endif %} {% endfor %}
           </tbody>
         </table>
       </div>
-    </main>
-    <!-- End Daftar Pengguna -->
-
-    <!-- Kontak Section -->
-    <section id="kontak" class="py-5">
-      <div class="container my-5">
-        <h1 class="mb-5">Pesan yang Diterima</h1>
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>No Telp</th>
-                <th>Pesan</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for message in messages %}
-              <tr>
-                <td>{{ message.name }}</td>
-                <td>{{ message.phone }}</td>
-                <td>{{ message.message }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
+    </div>
     <!-- Footer -->
     <footer class="footer mt-5 py-4">
       <div class="container">
@@ -1326,12 +792,10 @@
       </div>
     </footer>
   </body>
-  <div style="
-    position: fixed;
-    top:0;left: 0;
-    z-index: 20000;
-    display: none;
-  " id=top_layer_map></div>
+  <div
+    style="position: fixed; top: 0; left: 0; z-index: 20000; display: none"
+    id="top_layer_map"
+  ></div>
 
   <script>
     document
@@ -1507,46 +971,53 @@
         modalPaymentProof.src = paymentProofFile;
         modalPaymentProof.alt = "Bukti Pembayaran: " + paymentProofFile;
       });
-
-
     });
-    const top_layer_map = document.querySelector('#top_layer_map');
-    top_layer_map.style.width = innerWidth + 'px';
-    top_layer_map.style.height = innerHeight + 'px';
+    const top_layer_map = document.querySelector("#top_layer_map");
+    top_layer_map.style.width = innerWidth + "px";
+    top_layer_map.style.height = innerHeight + "px";
     let kurir_position = null;
     let id_order = null;
-    const updateKurirPosition = (id)=>{
+    const updateKurirPosition = (id) => {
       getLocation();
       id_order = id;
-    }
+    };
     function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError);
-        } else {
-            alert("Geolocation is not supported by this browser.");
-        }
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
     }
 
     async function showPosition(position) {
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
-        kurir_position = `${latitude},${longitude}`;
-        let response = await fetch(`/admin/set_kurir_position/${id_order}/`+kurir_position);
-        if((await response.json()).valid)
-          alert('Posisi kurir berhasil diperbarui!');
-        else alert('Gagal memperbarui posisi kurir!');
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
+      kurir_position = `${latitude},${longitude}`;
+      let response = await fetch(
+        `/admin/set_kurir_position/${id_order}/` + kurir_position
+      );
+      if ((await response.json()).valid)
+        alert("Posisi kurir berhasil diperbarui!");
+      else alert("Gagal memperbarui posisi kurir!");
     }
 
     function showError(error) {
-        alert('Terjadi kesalahan!');
-        location.reload();
+      alert("Terjadi kesalahan!");
+      location.reload();
     }
 
-    async function setKurirId(el,param){
-      let response = await fetch(`/kurir/set/${param}/`+el.value);
-      if((await response.json()).valid)
-        alert('Kurir berhasil diperbarui!');
-      else alert('Gagal memperbarui kurir!');
+    async function setKurirId(el, param) {
+      let response = await fetch(`/kurir/set/${param}/` + el.value);
+      if ((await response.json()).valid) alert("Kurir berhasil diperbarui!");
+      else alert("Gagal memperbarui kurir!");
+    }
+    async function setStatusPesanan(el, param) {
+      let response = await fetch(
+        `/kurir/set-status-pesanan/${param}/` + el.value
+      );
+      if ((await response.json()).valid)
+        alert("Status Pesanan berhasil diperbarui!");
+      else alert("Gagal memperbarui Status Pesanan!");
     }
   </script>
 </html>
