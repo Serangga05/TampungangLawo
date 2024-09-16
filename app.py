@@ -322,53 +322,7 @@ def upload_bukti():
         return redirect(url_for('login'))
 
 
-@app.route('/upload_bukti_baru', methods=['POST'])
-def upload_bukti_baru():
-    if request.method == 'POST':
-        # Check for JWT token (optional)
-        # ... (Implement token verification if needed)
 
-        # Check for uploaded file
-        if 'payment_proof' not in request.files:
-            flash('Tidak ada file yang dipilih.')
-            return redirect(url_for('pay'))
-
-        file = request.files['payment_proof']
-
-        # Check for empty filename
-        if file.filename == '':
-            flash('Tidak ada file yang dipilih.')
-            return redirect(url_for('pay'))
-
-        # Validate file type (optional)
-        # ... (Implement allowed_file function as explained earlier)
-        # if file and allowed_file(file.filename):
-
-        # Secure filename and save to static/img
-        filename = secure_filename(file.filename)
-        file_path = os.path.join('static/img', filename)
-        file.save(file_path)
-
-        # Generate complete URL for saved image
-        file_url = f"/static/img/{filename}"
-
-        # Extract order ID from form data
-        order_id = request.form.get('order_id')
-
-        # Update order document with payment proof and status
-        try:
-            db.orders.update_one(
-                {'_id': ObjectId(order_id)},
-                {'$set': {'payment_proof': file_url, 'status': 'Bukti Pembayaran Diunggah'}}
-            )
-            flash('Bukti pembayaran berhasil diunggah.')
-            return redirect(url_for('pesanan'))
-        except Exception as e:
-            # Handle database update errors
-            flash(f'Terjadi kesalahan saat mengunggah bukti pembayaran: {str(e)}')
-            return redirect(url_for('pay'))
-
-    return jsonify({'error': 'Invalid request method'}), 400
 
 # Route untuk membuat pesanan
 @app.route('/submit_order', methods=['POST'])
@@ -1119,7 +1073,53 @@ def submit_message():
     # Redirect kembali ke halaman utama
     return redirect(url_for('home'))
 
+@app.route('/upload_bukti_baru', methods=['POST'])
+def upload_bukti_baru():
+    if request.method == 'POST':
+        # Check for JWT token (optional)
+        # ... (Implement token verification if needed)
 
+        # Check for uploaded file
+        if 'payment_proof' not in request.files:
+            flash('Tidak ada file yang dipilih.')
+            return redirect(url_for('pay'))
+
+        file = request.files['payment_proof']
+
+        # Check for empty filename
+        if file.filename == '':
+            flash('Tidak ada file yang dipilih.')
+            return redirect(url_for('pay'))
+
+        # Validate file type (optional)
+        # ... (Implement allowed_file function as explained earlier)
+        # if file and allowed_file(file.filename):
+
+        # Secure filename and save to static/img
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('static/img', filename)
+        file.save(file_path)
+
+        # Generate complete URL for saved image
+        file_url = f"/static/img/{filename}"
+
+        # Extract order ID from form data
+        order_id = request.form.get('order_id')
+
+        # Update order document with payment proof and status
+        try:
+            db.orders.update_one(
+                {'_id': ObjectId(order_id)},
+                {'$set': {'payment_proof': file_url, 'status': 'Bukti Pembayaran Diunggah'}}
+            )
+            flash('Bukti pembayaran berhasil diunggah.')
+            return redirect(url_for('pesanan'))
+        except Exception as e:
+            # Handle database update errors
+            flash(f'Terjadi kesalahan saat mengunggah bukti pembayaran: {str(e)}')
+            return redirect(url_for('pay'))
+
+    return jsonify({'error': 'Invalid request method'}), 400
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
