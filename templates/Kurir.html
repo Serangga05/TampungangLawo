@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kurir Tampunganglawo</title>
+    <title>Admin Tampunganglawo</title>
 
     <!-- Bootstrap CSS -->
     <link
@@ -493,21 +493,9 @@
         color: #ffffff; /* Warna putih untuk ikon saat dihover */
       }
     </style>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.css" />
     <script src="https://unpkg.com/@geoapify/leaflet-address-search-plugin@^1/dist/L.Control.GeoapifyAddressSearch.min.js"></script>
     <!-- Include Leaflet Routing Machine library -->
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
@@ -694,8 +682,8 @@
             </tr>
           </thead>
           <tbody>
-            {% for order in orders %} {% if order.status == 'Sedang Dalam
-            Perjalanan' %}
+            {% for order in orders %}
+            {% if order.status == 'Sedang Dalam Perjalanan' %}
             <tr>
               <td>{{ order.order_date }}</td>
               <td>
@@ -712,10 +700,7 @@
               </td>
               <td>Rp {{ '{:,.0f}'.format(order.final_price) }}</td>
               <td>
-                <select
-                  class="form-control"
-                  onchange="setStatusPesanan(this,'{{order._id}}')"
-                >
+                <select class=form-control onchange="setStatusPesanan(this,'{{order._id}}')">
                   <option value="Sedang Dalam Perjalanan" selected>
                     Sedang Dalam Perjalanan
                   </option>
@@ -723,17 +708,14 @@
                 </select>
               </td>
               <td>
-                <div style="display: flex; gap: 5px">
-                  <div
-                    class="btn btn-sm btn-primary rounded-5"
-                    onclick="updateKurirPosition('{{order._id}}')"
-                  >
-                    Update
-                  </div>
+                <div style="display:flex;gap:5px;">
+                  <div 
+                  class="btn btn-sm btn-primary rounded-5" onclick="updateKurirPosition('{{order._id}}')">Update</div>
                 </div>
               </td>
             </tr>
-            {% endif %} {% endfor %}
+            {% endif %}
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -792,10 +774,12 @@
       </div>
     </footer>
   </body>
-  <div
-    style="position: fixed; top: 0; left: 0; z-index: 20000; display: none"
-    id="top_layer_map"
-  ></div>
+  <div style="
+    position: fixed;
+    top:0;left: 0;
+    z-index: 20000;
+    display: none;
+  " id=top_layer_map></div>
 
   <script>
     document
@@ -971,53 +955,52 @@
         modalPaymentProof.src = paymentProofFile;
         modalPaymentProof.alt = "Bukti Pembayaran: " + paymentProofFile;
       });
+
+
     });
-    const top_layer_map = document.querySelector("#top_layer_map");
-    top_layer_map.style.width = innerWidth + "px";
-    top_layer_map.style.height = innerHeight + "px";
+    const top_layer_map = document.querySelector('#top_layer_map');
+    top_layer_map.style.width = innerWidth + 'px';
+    top_layer_map.style.height = innerHeight + 'px';
     let kurir_position = null;
     let id_order = null;
-    const updateKurirPosition = (id) => {
+    const updateKurirPosition = (id)=>{
       getLocation();
       id_order = id;
-    };
+    }
     function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
     }
 
     async function showPosition(position) {
-      var latitude = position.coords.latitude;
-      var longitude = position.coords.longitude;
-      kurir_position = `${latitude},${longitude}`;
-      let response = await fetch(
-        `/admin/set_kurir_position/${id_order}/` + kurir_position
-      );
-      if ((await response.json()).valid)
-        alert("Posisi kurir berhasil diperbarui!");
-      else alert("Gagal memperbarui posisi kurir!");
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        kurir_position = `${latitude},${longitude}`;
+        let response = await fetch(`/admin/set_kurir_position/${id_order}/`+kurir_position);
+        if((await response.json()).valid)
+          alert('Posisi kurir berhasil diperbarui!');
+        else alert('Gagal memperbarui posisi kurir!');
     }
 
     function showError(error) {
-      alert("Terjadi kesalahan!");
-      location.reload();
+        alert('Terjadi kesalahan!');
+        location.reload();
     }
 
-    async function setKurirId(el, param) {
-      let response = await fetch(`/kurir/set/${param}/` + el.value);
-      if ((await response.json()).valid) alert("Kurir berhasil diperbarui!");
-      else alert("Gagal memperbarui kurir!");
+    async function setKurirId(el,param){
+      let response = await fetch(`/kurir/set/${param}/`+el.value);
+      if((await response.json()).valid)
+        alert('Kurir berhasil diperbarui!');
+      else alert('Gagal memperbarui kurir!');
     }
-    async function setStatusPesanan(el, param) {
-      let response = await fetch(
-        `/kurir/set-status-pesanan/${param}/` + el.value
-      );
-      if ((await response.json()).valid)
-        alert("Status Pesanan berhasil diperbarui!");
-      else alert("Gagal memperbarui Status Pesanan!");
+    async function setStatusPesanan(el,param){
+      let response = await fetch(`/kurir/set-status-pesanan/${param}/`+el.value);
+      if((await response.json()).valid)
+        alert('Status Pesanan berhasil diperbarui!');
+      else alert('Gagal memperbarui Status Pesanan!');
     }
   </script>
 </html>
