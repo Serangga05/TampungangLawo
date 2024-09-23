@@ -490,26 +490,12 @@
               </div>
     
               <!-- Modal -->
-              <div
-                class="modal fade"
-                id="modal-{{ loop.index }}"
-                tabindex="-1"
-                role="dialog"
-                aria-labelledby="modalLabel-{{ loop.index }}"
-                aria-hidden="true"
-              >
+              <div class="modal fade" id="modal-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="modalLabel-{{ loop.index }}" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="modalLabel-{{ loop.index }}">
-                        Status Pesanan
-                      </h5>
-                      <button
-                        type="button"
-                        class="close"
-                        data-dismiss="modal"
-                        aria-label="Close"
-                      >
+                      <h5 class="modal-title" id="modalLabel-{{ loop.index }}">Status Pesanan</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
@@ -517,49 +503,47 @@
                       <!-- Progress Tracker -->
                       <div class="tracking-status">
                         <!-- Step 1: Pesanan Diterima -->
-                        <div
-                          class="step {% if order.status in ['Pesanan Diterima', 'Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                        >
+                        <div class="step {% if order.status in ['Pesanan Diterima', 'Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Kurir Menjemput Pesanan', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}">
                           <div class="icon">
                             <i class="fas fa-check-circle"></i>
                           </div>
                           <p>Pesanan Diterima</p>
                         </div>
-    
+
                         <!-- Step 2: Bukti Pembayaran Diunggah -->
-                        <div
-                          class="step {% if order.status in ['Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                        >
+                        <div class="step {% if order.status in ['Bukti Pembayaran Diunggah', 'Sedang Dikemas', 'Kurir Menjemput Pesanan', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}">
                           <div class="icon">
                             <i class="fas fa-file-upload"></i>
                           </div>
                           <p>Bukti Pembayaran Diunggah</p>
                         </div>
-    
+
                         <!-- Step 3: Sedang Dikemas -->
-                        <div
-                          class="step {% if order.status in ['Sedang Dikemas', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                        >
+                        <div class="step {% if order.status in ['Sedang Dikemas', 'Kurir Menjemput Pesanan', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}">
                           <div class="icon">
                             <i class="fas fa-box"></i>
                           </div>
                           <p>Sedang Dikemas</p>
                         </div>
-    
-                        <!-- Step 4: Sedang Dalam Perjalanan -->
-                        <div
-                          class="step {% if order.status in ['Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}"
-                        >
+
+                        <!-- Step 4: Kurir Menjemput Pesanan -->
+                        <div class="step {% if order.status in ['Kurir Menjemput Pesanan', 'Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}">
+                          <div class="icon">
+                            <i class="fas fa-truck"></i>
+                          </div>
+                          <p>Kurir Menjemput Pesanan</p>
+                        </div>
+
+                        <!-- Step 5: Sedang Dalam Perjalanan -->
+                        <div class="step {% if order.status in ['Sedang Dalam Perjalanan', 'Pesanan Selesai'] %}completed{% endif %}">
                           <div class="icon">
                             <i class="fas fa-shipping-fast"></i>
                           </div>
                           <p>Sedang Dalam Perjalanan</p>
                         </div>
-    
-                        <!-- Step 5: Pesanan Selesai -->
-                        <div
-                          class="step {% if order.status == 'Pesanan Selesai' %}completed{% endif %}"
-                        >
+
+                        <!-- Step 6: Pesanan Selesai -->
+                        <div class="step {% if order.status == 'Pesanan Selesai' %}completed{% endif %}">
                           <div class="icon">
                             <i class="fas fa-box-open"></i>
                           </div>
@@ -568,13 +552,7 @@
                       </div>
                     </div>
                     <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-dismiss="modal"
-                      >
-                        Tutup
-                      </button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                     </div>
                   </div>
                 </div>
